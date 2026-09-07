@@ -310,6 +310,7 @@
 
         let storedId = localStorage.getItem('wa_user_id');
         let storedName = localStorage.getItem('wa_user_name');
+        let storedHandle = localStorage.getItem('wa_user_handle');
         let storedAvatar = localStorage.getItem('wa_user_avatar');
         let storedCover = localStorage.getItem('wa_user_cover');
 
@@ -317,18 +318,26 @@
             storedId = 'anon_' + Math.random().toString(36).substring(2, 9);
             const rNum = Math.floor(1000 + Math.random() * 9000);
             storedName = 'Anônimo #' + rNum;
+            storedHandle = '@anon_' + rNum;
             storedAvatar = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(storedId)}`;
             storedCover = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1000&auto=format&fit=crop&q=80';
             
             localStorage.setItem('wa_user_id', storedId);
             localStorage.setItem('wa_user_name', storedName);
+            localStorage.setItem('wa_user_handle', storedHandle);
             localStorage.setItem('wa_user_avatar', storedAvatar);
             localStorage.setItem('wa_user_cover', storedCover);
+        }
+
+        if (!storedHandle) {
+            storedHandle = '@' + storedName.toLowerCase().replace(/[^a-z0-9_]/g, '') + '_' + Math.floor(100 + Math.random() * 900);
+            localStorage.setItem('wa_user_handle', storedHandle);
         }
 
         const syncPayload = {
             userId: storedId,
             name: storedName,
+            handle: storedHandle,
             avatar: storedAvatar,
             cover: storedCover
         };
@@ -408,6 +417,8 @@
         profileAvatarImg.src = currentUser.avatar;
         profileCoverImg.src = currentUser.cover;
         inputEditName.value = currentUser.name;
+        const inputEditHandle = document.getElementById('input-edit-handle');
+        if (inputEditHandle) inputEditHandle.value = currentUser.handle || ('@' + currentUser.id);
         inputEditAbout.value = currentUser.about || '';
 
         settingsMyAvatar.src = currentUser.avatar;
@@ -2811,6 +2822,20 @@
         if (name) updateUserCustomProfile({ name });
     });
 
+    const inputEditHandle = document.getElementById('input-edit-handle');
+    const btnSaveHandle = document.getElementById('btn-save-handle');
+    if (btnSaveHandle && inputEditHandle) {
+        btnSaveHandle.addEventListener('click', () => {
+            let h = inputEditHandle.value.trim();
+            if (h) {
+                if (!h.startsWith('@')) h = '@' + h;
+                h = h.toLowerCase().replace(/[^a-z0-9_@]/g, '');
+                inputEditHandle.value = h;
+                updateUserCustomProfile({ handle: h });
+            }
+        });
+    }
+
     btnSaveAbout.addEventListener('click', () => {
         const about = inputEditAbout.value.trim();
         updateUserCustomProfile({ about });
@@ -2829,10 +2854,12 @@
                 currentUser = data.user;
                 try {
                     localStorage.setItem('wa_user_name', currentUser.name);
+                    if (currentUser.handle) localStorage.setItem('wa_user_handle', currentUser.handle);
                     localStorage.setItem('wa_user_avatar', currentUser.avatar);
                     localStorage.setItem('wa_user_cover', currentUser.cover);
                 } catch (err) {}
                 updateProfileUI();
+                showToast('Perfil atualizado com sucesso!', 'fa-solid fa-check');
             }
         } catch (e) {
             console.error('Erro ao sincronizar perfil:', e);
@@ -3467,6 +3494,7 @@
                 const users = await fetchUsersForSearchSuggestions();
                 const matched = users.filter(u => 
                     (u.name && u.name.toLowerCase().includes(val.toLowerCase())) || 
+                    (u.handle && u.handle.toLowerCase().includes(val.toLowerCase())) ||
                     (u.id && u.id.toLowerCase().includes(val.toLowerCase()))
                 );
 
@@ -3475,10 +3503,11 @@
                     matched.slice(0, 6).forEach(u => {
                         const item = document.createElement('div');
                         item.className = 'autocomplete-item-card';
+                        const userHandleTag = u.handle || ('@' + u.id);
                         item.innerHTML = `
                             <img src="${escapeHTML(u.avatar || '')}" class="autocomplete-avatar" alt="">
                             <div class="autocomplete-info">
-                                <strong class="autocomplete-name">${escapeHTML(u.name)}</strong>
+                                <strong class="autocomplete-name">${escapeHTML(u.name)} <span style="color:var(--wa-green); font-size:12px; font-weight:500;">${escapeHTML(userHandleTag)}</span></strong>
                                 <span class="autocomplete-sub">${u.isOnline ? '🟢 Online agora' : 'Disponível no ZapAnon'}</span>
                             </div>
                             <span class="autocomplete-action-badge"><i class="fa-solid fa-comments"></i> Conversar</span>
@@ -3693,7 +3722,7 @@
         if (userProfileCoverImg) userProfileCoverImg.src = targetUser.cover || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1000&auto=format&fit=crop&q=80';
         if (userProfileAvatarImg) userProfileAvatarImg.src = targetUser.avatar;
         if (userProfileDisplayName) userProfileDisplayName.textContent = targetUser.name;
-        if (userProfileUsernameTag) userProfileUsernameTag.textContent = '@' + targetUser.id;
+        if (userProfileUsernameTag) userProfileUsernameTag.textContent = targetUser.handle || ('@' + targetUser.id);
         if (userProfileAboutText) userProfileAboutText.textContent = targetUser.about || 'Disponível no ZapAnon';
 
         if (userProfileOnlineBadge) {

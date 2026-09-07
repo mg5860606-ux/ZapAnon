@@ -705,10 +705,14 @@ const server = http.createServer((req, res) => {
                 const userRef = doc(db, 'users', data.userId);
                 const userSnap = await getDoc(userRef);
                 
+                let cleanHandle = data.handle || ('@' + (data.name || 'anon').toLowerCase().replace(/[^a-z0-9_]/g, '') + '_' + Math.floor(100 + Math.random() * 900));
+                if (!cleanHandle.startsWith('@')) cleanHandle = '@' + cleanHandle;
+
                 if (!userSnap.exists()) {
                     user = {
                         id: data.userId,
                         name: data.name || 'Anônimo',
+                        handle: cleanHandle,
                         avatar: data.avatar || `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(data.userId)}`,
                         cover: data.cover || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1000&auto=format&fit=crop&q=80',
                         about: data.about || 'Disponível no ZapAnon',
@@ -719,6 +723,8 @@ const server = http.createServer((req, res) => {
                     await setDoc(userRef, user);
                 } else {
                     user = userSnap.data();
+                    if (!user.handle) user.handle = cleanHandle;
+                    if (data.handle) user.handle = data.handle.startsWith('@') ? data.handle : ('@' + data.handle);
                     if (data.name) user.name = data.name.trim().substring(0, 35);
                     if (data.avatar) user.avatar = data.avatar;
                     if (data.cover) user.cover = data.cover;
@@ -852,8 +858,9 @@ const server = http.createServer((req, res) => {
                         list.push({
                             id: u.id,
                             name: u.name,
+                            handle: u.handle || ('@' + (u.name || 'user').toLowerCase().replace(/[^a-z0-9_]/g, '') + '_' + u.id.slice(-4)),
                             avatar: u.avatar,
-                            about: u.about || 'Disponível no WhatsApp',
+                            about: u.about || 'Disponível no ZapAnon',
                             isOnline: u.isOnline,
                             lastSeen: u.lastSeen
                         });
@@ -881,14 +888,16 @@ const server = http.createServer((req, res) => {
             const matchedUsers = Array.from(users.values())
                 .filter(u => u.id !== currentUserId && (
                     u.name.toLowerCase().includes(q) || 
+                    (u.handle && u.handle.toLowerCase().includes(q)) ||
                     u.id.toLowerCase().includes(q) || 
                     (u.about && u.about.toLowerCase().includes(q))
                 ))
                 .map(u => ({
                     id: u.id,
                     name: u.name,
+                    handle: u.handle || ('@' + (u.name || 'user').toLowerCase().replace(/[^a-z0-9_]/g, '') + '_' + u.id.slice(-4)),
                     avatar: u.avatar,
-                    about: u.about || 'Disponível no WhatsApp',
+                    about: u.about || 'Disponível no ZapAnon',
                     isOnline: u.isOnline,
                     lastSeen: u.lastSeen
                 }));
