@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ZapAnon • WhatsApp Web</title>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ZapAnon">
+    <meta name="theme-color" content="#00a884">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="light-theme">
+    <!-- WhatsApp Startup Splash Screen -->
+    <div id="whatsapp-splash-screen" class="wa-splash-overlay">
+        <div class="wa-splash-center">
+            <div class="wa-splash-logo-circle">
+                <span>Z</span>
+            </div>
+            <h1 class="wa-splash-title">ZapAnon</h1>
+            <p class="wa-splash-subtitle">Criptografia & Anonymity Total</p>
+        </div>
+        <div class="wa-splash-footer">
+            <span class="wa-splash-from">DESENVOLVIDO POR</span>
+            <strong class="wa-splash-brand">👑 CORVO</strong>
+        </div>
+    </div>
+    <script>
+        setTimeout(function() {
+            var splash = document.getElementById('whatsapp-splash-screen');
+            if (splash) {
+                splash.style.opacity = '0';
+                splash.style.visibility = 'hidden';
+                splash.style.pointerEvents = 'none';
+                setTimeout(function() {
+                    if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
+                }, 400);
+            }
+        }, 1200);
+    </script>
+
+    <!-- Top Green Stripe for WhatsApp Web Desktop -->
+    <div class="wa-top-bar-bg"></div>
+
+    <div id="app" class="wa-app-root">
+        
+        <!-- ==========================================================================
+             SIDEBAR (LEFT PANEL)
+             ========================================================================== -->
+        <aside class="wa-sidebar" id="sidebar-panel">
+            
+            <!-- Sidebar Header -->
+            <header class="wa-sidebar-header">
+                <div class="user-avatar-btn" id="btn-open-my-profile" title="Meu Perfil">
+                    <img id="my-header-avatar" src="https://api.dicebear.com/7.x/adventurer/svg?seed=ZapAnonUser" alt="Eu">
+                </div>
+                <div class="header-action-buttons">
+                    <button id="btn-tab-communities" class="wa-icon-btn" title="Comunidades"><i class="fa-solid fa-users-line"></i></button>
+                    <button id="btn-tab-channels" class="wa-icon-btn" title="Canais"><i class="fa-solid fa-bullhorn"></i></button>
+                    <button id="btn-tab-status" class="wa-icon-btn" title="Status"><i class="fa-solid fa-circle-notch"></i></button>
+                    <button id="btn-tab-bots" class="wa-icon-btn" title="Bots & Tokens API"><i class="fa-solid fa-robot"></i></button>
+                    <button id="btn-new-chat" class="wa-icon-btn" title="Novo Grupo / Chat"><i class="fa-solid fa-message"></i></button>
+                    
+                    <div class="dropdown-wrapper">
+                        <button id="btn-menu-options" class="wa-icon-btn" title="Mais opções"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                        <div class="wa-dropdown-menu" id="dropdown-menu">
+                            <div class="dropdown-item" id="menu-opt-new-group"><i class="fa-solid fa-users"></i> Novo Grupo</div>
+                            <div class="dropdown-item" id="menu-opt-contacts"><i class="fa-solid fa-address-book"></i> Meus Contatos Salvos</div>
+                            <div class="dropdown-item" id="menu-opt-join-group-link"><i class="fa-solid fa-link"></i> Entrar com Link de Convite</div>
+                            <div class="dropdown-item" id="menu-opt-new-community"><i class="fa-solid fa-users-line"></i> Nova Comunidade</div>
+                            <div class="dropdown-item" id="menu-opt-bots"><i class="fa-solid fa-robot"></i> BotFather (Gerenciador de Bots)</div>
+                            <div class="dropdown-item" id="menu-opt-starred"><i class="fa-solid fa-star"></i> Mensagens Favoritas</div>
+                            <div class="dropdown-item" id="menu-opt-settings"><i class="fa-solid fa-gear"></i> Configurações</div>
+                            <div class="dropdown-item" id="menu-opt-theme"><i class="fa-solid fa-circle-half-stroke"></i> Alternar Tema (Claro/Escuro)</div>
+                            <div class="dropdown-item" id="menu-opt-clear" style="color: #ea4335;"><i class="fa-solid fa-trash-can" style="color:#ea4335;"></i> Desconectar / Limpar</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Search & Filter Bar -->
+            <div class="wa-search-section">
+                <div class="search-input-pill">
+                    <button class="search-icon-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    <input type="text" id="input-search-chats" placeholder="Pesquisar ou começar uma nova conversa" autocomplete="off">
+                    <button class="filter-icon-btn" id="btn-filter-unread" title="Filtro de não lidas"><i class="fa-solid fa-filter"></i></button>
+                </div>
+
+                <!-- Live Auto-Complete Suggestions Dropdown -->
+                <div id="search-autocomplete-dropdown" class="wa-autocomplete-dropdown" style="display: none;">
+                    <div class="autocomplete-header">
+                        <i class="fa-solid fa-user-plus"></i> Sugestões de pessoas encontradas:
+                    </div>
+                    <div id="autocomplete-users-list" class="autocomplete-items-list">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Filter Chips -->
+            <div class="wa-filter-chips-row">
+                <button class="chip-filter active" data-filter="all">Tudo</button>
+                <button class="chip-filter" data-filter="unread">Não lidas</button>
+                <button class="chip-filter" data-filter="favorites">Favoritas</button>
+                <button class="chip-filter" data-filter="groups">Grupos</button>
+            </div>
+
+            <!-- Archive Banner -->
+            <div class="wa-archived-bar" id="btn-open-archived">
+                <i class="fa-solid fa-box-archive"></i>
+                <span>Arquivadas</span>
+                <small id="archived-count-badge">0</small>
+            </div>
+
+            <!-- Conversations Scrollable List -->
+            <div class="wa-conversations-list" id="conversations-list">
+                <!-- Injected via JS -->
+            </div>
+
+            <!-- ==========================================================================
+                 DRAWER 1: MEU PERFIL & CAPA
+                 ========================================================================== -->
+            <div class="wa-drawer" id="drawer-profile">
+                <div class="drawer-header-bar">
+                    <button class="drawer-back-btn" id="btn-close-profile-drawer"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h3>Perfil</h3>
+                </div>
+                <div class="drawer-scroll-content">
+                    <div class="profile-cover-section">
+                        <img id="profile-cover-img" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1000&auto=format&fit=crop&q=80" alt="Capa">
+                        <label for="input-upload-cover" class="btn-change-cover-pill" title="Mudar Foto de Capa">
+                            <i class="fa-solid fa-camera"></i> Alterar Capa
+                        </label>
+                        <input type="file" id="input-upload-cover" accept="image/*" style="display:none;">
+                    </div>
+
+                    <div class="profile-avatar-center">
+                        <div class="profile-avatar-wrapper">
+                            <img id="profile-avatar-img" src="https://api.dicebear.com/7.x/adventurer/svg?seed=ZapAnonUser" alt="Foto de Perfil">
+                            <label for="input-upload-avatar" class="avatar-camera-badge" title="Alterar Foto de Perfil">
+                                <i class="fa-solid fa-camera"></i>
+                            </label>
+                            <input type="file" id="input-upload-avatar" accept="image/*" style="display:none;">
+                        </div>
+                        <button type="button" id="btn-dice-avatar-fast" class="btn-random-avatar-pill">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Gerar Avatar Anime / Anônimo
+                        </button>
+                    </div>
+
+                    <div class="profile-info-block">
+                        <label>Seu Nome</label>
+                        <div class="editable-row">
+                            <input type="text" id="input-edit-name" maxlength="35" autocomplete="off" placeholder="Seu codinome">
+                            <button id="btn-save-name" class="btn-save-check" title="Salvar nome"><i class="fa-solid fa-check"></i></button>
+                        </div>
+                        <p class="field-hint">Esse é o nome que as pessoas e grupos verão no ZapAnon.</p>
+                    </div>
+
+                    <div class="profile-info-block">
+                        <label>Recado / Sobre Você</label>
+                        <div class="editable-row">
+                            <input type="text" id="input-edit-about" maxlength="140" autocomplete="off" placeholder="Disponível no ZapAnon">
+                            <button id="btn-save-about" class="btn-save-check" title="Salvar recado"><i class="fa-solid fa-check"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 DRAWER 2: CONFIGURAÇÕES GERAIS
+                 ========================================================================== -->
+            <div class="wa-drawer" id="drawer-settings">
+                <div class="drawer-header-bar">
+                    <button class="drawer-back-btn" id="btn-close-settings-drawer"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h3>Configurações</h3>
+                </div>
+                <div class="drawer-scroll-content">
+                    <div class="settings-profile-card" id="btn-settings-to-profile" title="Abrir Perfil">
+                        <div class="settings-profile-avatar">
+                            <img id="settings-my-avatar" src="https://api.dicebear.com/7.x/adventurer/svg?seed=ZapAnonUser" alt="">
+                        </div>
+                        <div class="settings-profile-details">
+                            <h4 id="settings-my-name">Meu Nome</h4>
+                            <p id="settings-my-about">Recado atual...</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-right chevron-icon"></i>
+                    </div>
+
+                    <div class="settings-menu-list">
+                        <div class="settings-menu-item" id="btn-open-privacy-sub">
+                            <i class="fa-solid fa-lock"></i>
+                            <div>
+                                <strong>Privacidade</strong>
+                                <small>Visto por último, confirmações de leitura, modo fantasma</small>
+                            </div>
+                            <i class="fa-solid fa-chevron-right chevron-icon"></i>
+                        </div>
+
+                        <div class="settings-menu-item" id="btn-open-chats-sub">
+                            <i class="fa-solid fa-message"></i>
+                            <div>
+                                <strong>Conversas</strong>
+                                <small>Tema, papéis de parede, tamanho da fonte, limpar histórico</small>
+                            </div>
+                            <i class="fa-solid fa-chevron-right chevron-icon"></i>
+                        </div>
+
+                        <div class="settings-menu-item" id="btn-open-notifs-sub">
+                            <i class="fa-solid fa-bell"></i>
+                            <div>
+                                <strong>Notificações</strong>
+                                <small>Sons de mensagens, alertas na tela, prévias</small>
+                            </div>
+                            <i class="fa-solid fa-chevron-right chevron-icon"></i>
+                        </div>
+
+                        <div class="settings-menu-item" id="btn-open-bots-sub">
+                            <i class="fa-solid fa-robot"></i>
+                            <div>
+                                <strong>BotFather & API de Bots (VPS/Host)</strong>
+                                <small>Crie bots, edite perfil, obtenha tokens e integre via Python/cURL</small>
+                            </div>
+                            <i class="fa-solid fa-chevron-right chevron-icon"></i>
+                        </div>
+
+                        <div class="settings-menu-item" id="btn-open-security-sub">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <div>
+                                <strong>Segurança & Criptografia</strong>
+                                <small>Notificações de segurança, status da criptografia</small>
+                            </div>
+                            <i class="fa-solid fa-chevron-right chevron-icon"></i>
+                        </div>
+
+                        <div class="settings-menu-item" id="btn-open-shortcuts-sub">
+                            <i class="fa-solid fa-keyboard"></i>
+                            <div>
+                                <strong>Atalhos do Teclado</strong>
+                                <small>Veja todos os comandos rápidos do ZapAnon</small>
+                            </div>
+                            <i class="fa-solid fa-chevron-right chevron-icon"></i>
+                        </div>
+
+                        <div class="settings-menu-item" id="btn-open-help-sub">
+                            <i class="fa-solid fa-circle-question"></i>
+                            <div>
+                                <strong>Ajuda & Informações</strong>
+                                <small>Central de ajuda, termos e suporte</small>
+                            </div>
+                            <i class="fa-solid fa-chevron-right chevron-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 DRAWER 3: PRIVACIDADE DETALHADA
+                 ========================================================================== -->
+            <div class="wa-drawer" id="drawer-privacy">
+                <div class="drawer-header-bar">
+                    <button class="drawer-back-btn" id="btn-close-privacy-drawer"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h3>Privacidade</h3>
+                </div>
+                <div class="drawer-scroll-content">
+                    <div class="privacy-section-header">Quem pode ver meus dados pessoais</div>
+
+                    <div class="privacy-item-row">
+                        <div>
+                            <strong>Visto por último e online</strong>
+                            <small>Defina quem vê quando você esteve ativo</small>
+                        </div>
+                        <select id="select-privacy-lastseen" class="privacy-select">
+                            <option value="everyone">Todos</option>
+                            <option value="contacts">Meus contatos</option>
+                            <option value="nobody">Ninguém</option>
+                        </select>
+                    </div>
+
+                    <div class="privacy-item-row">
+                        <div>
+                            <strong>Foto do perfil</strong>
+                            <small>Quem tem permissão para ver sua foto</small>
+                        </div>
+                        <select id="select-privacy-photo" class="privacy-select">
+                            <option value="everyone">Todos</option>
+                            <option value="contacts">Meus contatos</option>
+                            <option value="nobody">Ninguém</option>
+                        </select>
+                    </div>
+
+                    <div class="privacy-item-row">
+                        <div>
+                            <strong>Recado</strong>
+                            <small>Quem pode visualizar seu status de texto</small>
+                        </div>
+                        <select id="select-privacy-about" class="privacy-select">
+                            <option value="everyone">Todos</option>
+                            <option value="nobody">Ninguém</option>
+                        </select>
+                    </div>
+
+                    <div class="privacy-item-row">
+                        <div>
+                            <strong>Confirmações de leitura</strong>
+                            <small>Se desativar, não enviará nem receberá o tique azul.</small>
+                        </div>
+                        <input type="checkbox" id="check-read-receipts" checked class="privacy-toggle">
+                    </div>
+
+                    <div class="privacy-section-header" style="margin-top:20px;">Modo Super Sigilo</div>
+                    
+                    <div class="privacy-item-row">
+                        <div>
+                            <strong>Modo Fantasma (Total Stealth)</strong>
+                            <small>Oculta status online, visto por último e "digitando...".</small>
+                        </div>
+                        <input type="checkbox" id="check-ghost-mode" class="privacy-toggle">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 DRAWER 4: CONFIGURAÇÕES DE CONVERSAS (TEMA, WALLPAPER, FONTE)
+                 ========================================================================== -->
+            <div class="wa-drawer" id="drawer-chats-settings">
+                <div class="drawer-header-bar">
+                    <button class="drawer-back-btn" id="btn-close-chats-drawer"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h3>Conversas</h3>
+                </div>
+                <div class="drawer-scroll-content">
+                    <div class="privacy-section-header">Exibição</div>
+
+                    <div class="privacy-item-row">
+                        <div>
+                            <strong>Tema Visual</strong>
+                            <small>Escolha entre o visual Claro e Escuro</small>
+                        </div>
+                        <select id="select-theme-setting" class="privacy-select">
+                            <option value="light">Tema Claro (Padrão)</option>
+                            <option value="dark">Tema Escuro</option>
+                        </select>
+                    </div>
+
+                    <div class="privacy-item-row">
+                        <div>
+                            <strong>Papel de Parede do Chat</strong>
+                            <small>Selecione a textura ou fundo das mensagens</small>
+                        </div>
+                        <select id="select-wallpaper-setting" class="privacy-select">
+                            <option value="default">Clássico ZapAnon (Doodle)</option>
+                            <option value="emerald">Verde Esmeralda</option>
+                            <option value="cyber">Cyber Matrix</option>
+                            <option value="midnight">Noite Profunda</option>
+                            <option value="coffee">Café Aconchegante</option>
+                        </select>
+                    </div>
+
+                    <div class="privacy-item-row">
+                        <div>
+                            <strong>Tamanho da Fonte</strong>
+                            <small>Tamanho do texto nas conversas e balões</small>
+                        </div>
+                        <select id="select-font-size-setting" class="privacy-select">
+                            <option value="small">Pequena</option>
+                            <option value="medium" selected>Média (Padrão)</option>
+                            <option value="large">Grande</option>
+                        </select>
+                    </div>
+
+                    <div class="privacy-section-header" style="margin-top:20px;">Configurações de Envio</div>
+
+                    <div class="privacy-item-row">
+                        <div>
+                            <strong>Enter para enviar</strong>
+                            <small>Pressionar Enter envia a mensagem imediatamente</small>
+                        </div>
+                        <input type="checkbox" id="check-enter-send" checked class="privacy-toggle">
+                    </div>
+
+                    <div style="padding: 24px 20px;">
+                        <button id="btn-clear-all-chats" class="btn-danger-full-width">
+                            <i class="fa-solid fa-trash-can"></i> Limpar Todas as Conversas
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 DRAWER 5: NOTIFICAÇÕES
+                 ========================================================================== -->
+            <div class="wa-drawer" id="drawer-notifs-settings">
+                <div class="drawer-header-bar">
+                    <button class="drawer-back-btn" id="btn-close-notifs-drawer"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h3>Notificações</h3>
+                </div>
+                <div class="drawer-scroll-content">
+                    <div class="privacy-section-header">Alertas de Mensagem</div>
+
+                    <div class="privacy-item-row">
+                        <div>
+                            <strong>Sons de notificação</strong>
+                            <small>Tocar tom ao receber novas mensagens</small>
+                        </div>
+                        <input type="checkbox" id="check-notif-sounds" checked class="privacy-toggle">
+                    </div>
+
+                    <div class="privacy-item-row">
+                        <div>
+                            <strong>Alertas na área de trabalho</strong>
+                            <small>Mostrar notificações push no navegador</small>
+                        </div>
+                        <input type="checkbox" id="check-desktop-alerts" checked class="privacy-toggle">
+                    </div>
+
+                    <div class="privacy-item-row">
+                        <div>
+                            <strong>Mostrar prévias</strong>
+                            <small>Exibir o texto da mensagem na notificação</small>
+                        </div>
+                        <input type="checkbox" id="check-preview-msg" checked class="privacy-toggle">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 DRAWER 6: SEGURANÇA
+                 ========================================================================== -->
+            <div class="wa-drawer" id="drawer-security-settings">
+                <div class="drawer-header-bar">
+                    <button class="drawer-back-btn" id="btn-close-security-drawer"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h3>Segurança</h3>
+                </div>
+                <div class="drawer-scroll-content">
+                    <div class="security-intro-banner">
+                        <i class="fa-solid fa-lock" style="font-size: 40px; color: var(--wa-green); margin-bottom: 12px;"></i>
+                        <h4>Sua privacidade é nossa prioridade</h4>
+                        <p>O ZapAnon protege suas conversas com criptografia de ponta a ponta e anonimato garantido. Suas mensagens, áudios, mídias e status ficam apenas entre você e as pessoas com quem conversa.</p>
+                    </div>
+
+                    <div class="privacy-item-row">
+                        <div>
+                            <strong>Notificações de segurança</strong>
+                            <small>Receba avisos quando o código de segurança de um contato mudar.</small>
+                        </div>
+                        <input type="checkbox" id="check-security-notifs" checked class="privacy-toggle">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 DRAWER 7: ATALHOS DO TECLADO
+                 ========================================================================== -->
+            <div class="wa-drawer" id="drawer-shortcuts">
+                <div class="drawer-header-bar">
+                    <button class="drawer-back-btn" id="btn-close-shortcuts-drawer"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h3>Atalhos do Teclado</h3>
+                </div>
+                <div class="drawer-scroll-content" style="padding: 10px 16px;">
+                    <div class="shortcut-row"><span>Nova conversa / grupo</span><kbd>Ctrl + Alt + N</kbd></div>
+                    <div class="shortcut-row"><span>Buscar mensagens na conversa</span><kbd>Ctrl + Alt + /</kbd></div>
+                    <div class="shortcut-row"><span>Abrir painel de figurinhas</span><kbd>Ctrl + Alt + E</kbd></div>
+                    <div class="shortcut-row"><span>Abrir Perfil</span><kbd>Ctrl + Alt + P</kbd></div>
+                    <div class="shortcut-row"><span>Enviar mensagem</span><kbd>Enter</kbd></div>
+                    <div class="shortcut-row"><span>Quebrar linha</span><kbd>Shift + Enter</kbd></div>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 DRAWER 8: MENSAGENS FAVORITAS
+                 ========================================================================== -->
+            <div class="wa-drawer" id="drawer-starred">
+                <div class="drawer-header-bar">
+                    <button class="drawer-back-btn" id="btn-close-starred-drawer"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h3>Mensagens Favoritas</h3>
+                </div>
+                <div class="drawer-scroll-content" id="starred-messages-container">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 DRAWER 9: COMUNIDADES
+                 ========================================================================== -->
+            <div class="wa-drawer" id="drawer-communities">
+                <div class="drawer-header-bar">
+                    <button class="drawer-back-btn" id="btn-close-communities-drawer"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h3>Comunidades</h3>
+                </div>
+                <div class="drawer-scroll-content">
+                    <div class="comm-banner-intro">
+                        <i class="fa-solid fa-users-line" style="font-size:38px; color:var(--wa-green); margin-bottom:8px;"></i>
+                        <h4>Reúna seus grupos em Comunidades</h4>
+                        <p>Organize facilmente grupos relacionados e envie avisos para todos os membros simultaneamente.</p>
+                        <button id="btn-open-new-community-modal" class="btn-create-comm-pill">
+                            <i class="fa-solid fa-plus"></i> Criar Comunidade
+                        </button>
+                    </div>
+                    <div class="privacy-section-header">Comunidades Ativas</div>
+                    <div id="communities-list-container" style="padding: 0 12px;">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 DRAWER 10: CANAIS
+                 ========================================================================== -->
+            <div class="wa-drawer" id="drawer-channels">
+                <div class="drawer-header-bar">
+                    <button class="drawer-back-btn" id="btn-close-channels-drawer"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h3>Canais</h3>
+                </div>
+                <div class="drawer-scroll-content">
+                    <div class="privacy-section-header">Canais em Destaque</div>
+                    <div id="channels-list-container" style="padding: 0 12px;">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 DRAWER 11: STATUS / STORIES 24H
+                 ========================================================================== -->
+            <div class="wa-drawer" id="drawer-status">
+                <div class="drawer-header-bar">
+                    <button class="drawer-back-btn" id="btn-close-status-drawer"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h3>Status</h3>
+                </div>
+                <div class="drawer-scroll-content">
+                    <div class="status-item-row" id="btn-my-status-add">
+                        <div class="status-avatar-ring has-add">
+                            <img id="my-status-avatar" src="https://api.dicebear.com/7.x/adventurer/svg?seed=ZapAnonUser" alt="Meu Status">
+                            <span class="add-status-plus"><i class="fa-solid fa-plus"></i></span>
+                        </div>
+                        <div class="status-item-info">
+                            <strong>Meu status</strong>
+                            <small>Toque para adicionar atualização</small>
+                        </div>
+                    </div>
+
+                    <div class="privacy-section-header">Atualizações recentes</div>
+                    <div id="status-feed-container">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 DRAWER 12: NOVO GRUPO COM FOTO, CAPA E DESCRIÇÃO
+                 ========================================================================== -->
+            <div class="wa-drawer" id="drawer-new-group">
+                <div class="drawer-header-bar">
+                    <button class="drawer-back-btn" id="btn-close-new-group-drawer"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h3>Nova Conversa / Grupo</h3>
+                </div>
+                <div class="drawer-scroll-content">
+                    
+                    <div style="padding: 14px 16px; border-bottom:1px solid var(--wa-border);">
+                        <label style="font-size:12px; font-weight:700; color:var(--wa-green); text-transform:uppercase; display:block; margin-bottom:10px;">
+                            <i class="fa-solid fa-user-large"></i> Contatos no ZapAnon (Bate-Papo Privado 1x1)
+                        </label>
+                        <div id="new-chat-contacts-list" style="display:flex; flex-direction:column; gap:8px;">
+                            <!-- Injected via JS -->
+                        </div>
+                    </div>
+
+                    <form id="form-create-group" style="margin-top:10px;">
+                        <label style="font-size:12px; font-weight:700; color:var(--wa-green); text-transform:uppercase; display:block; margin: 10px 16px;">
+                            <i class="fa-solid fa-users"></i> Ou Criar um Novo Grupo
+                        </label>
+                        <div class="profile-cover-section" style="height:140px;">
+                            <img id="newgroup-cover-preview" src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=800&auto=format&fit=crop&q=80" alt="Capa do Grupo">
+                            <label for="input-group-cover" class="btn-change-cover-pill">
+                                <i class="fa-solid fa-camera"></i> Capa do Grupo
+                            </label>
+                            <input type="file" id="input-group-cover" accept="image/*" style="display:none;">
+                        </div>
+
+                        <div class="profile-avatar-center">
+                            <div class="profile-avatar-wrapper">
+                                <img id="newgroup-avatar-preview" src="https://api.dicebear.com/7.x/identicon/svg?seed=NovoGrupo" alt="Ícone do Grupo">
+                                <label for="input-group-avatar" class="avatar-camera-badge">
+                                    <i class="fa-solid fa-camera"></i>
+                                </label>
+                                <input type="file" id="input-group-avatar" accept="image/*" style="display:none;">
+                            </div>
+                            <button type="button" id="btn-dice-group-avatar" class="btn-random-avatar-pill" style="margin-top:8px;">
+                                <i class="fa-solid fa-dice"></i> Gerar Ícone Anônimo
+                            </button>
+                        </div>
+
+                        <div class="profile-info-block">
+                            <label>Nome do Grupo</label>
+                            <div class="editable-row">
+                                <input type="text" id="input-newgroup-name" placeholder="Digite o nome do grupo" maxlength="45" required autocomplete="off">
+                            </div>
+                        </div>
+
+                        <div class="profile-info-block">
+                            <label>Descrição do Grupo</label>
+                            <div class="editable-row">
+                                <input type="text" id="input-newgroup-desc" placeholder="Regras ou objetivo do grupo" maxlength="250" autocomplete="off">
+                            </div>
+                        </div>
+
+                        <div class="profile-info-block" style="margin: 14px 16px;">
+                            <label style="font-size:12px; font-weight:700; color:var(--wa-green); text-transform:uppercase; display:block; margin-bottom:8px;">
+                                <i class="fa-solid fa-user-plus"></i> Adicionar Participantes ao Grupo
+                            </label>
+                            <div id="newgroup-members-select-box" style="display:flex; flex-direction:column; gap:6px; max-height:180px; overflow-y:auto; padding:6px; background:var(--wa-bg-panel); border-radius:8px; border:1px solid var(--wa-border);">
+                                <!-- Injected dynamically via JS -->
+                            </div>
+                        </div>
+
+                        <div style="padding: 24px; text-align: center;">
+                            <button type="submit" class="wa-btn-floating-confirm" title="Confirmar Criação de Grupo">
+                                <i class="fa-solid fa-check"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 DRAWER 13: BOTFATHER & GERENCIADOR DE BOTS (ESTILO TELEGRAM)
+                 ========================================================================== -->
+            <div class="wa-drawer" id="drawer-bots">
+                <div class="drawer-header-bar">
+                    <button class="drawer-back-btn" id="btn-close-bots-drawer"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h3>BotFather (Bots & Tokens API)</h3>
+                </div>
+                <div class="drawer-scroll-content">
+                    
+                    <div class="bot-banner-intro">
+                        <div class="bot-banner-icon"><i class="fa-solid fa-robot"></i></div>
+                        <div>
+                            <strong>Controle Bots via API Externa (VPS / Host)</strong>
+                            <p>Gere um Token e controle seu bot com scripts em Python, Node.js ou cURL idêntico ao Telegram (Long-Polling <code>getUpdates</code> e <code>sendMessage</code>).</p>
+                        </div>
+                    </div>
+
+                    <div style="padding: 0 16px 12px 16px;">
+                        <button id="btn-open-create-bot-modal" class="btn-create-bot-action">
+                            <i class="fa-solid fa-plus"></i> Criar Novo Bot
+                        </button>
+                    </div>
+
+                    <div class="privacy-section-header">Meus Bots Ativos</div>
+                    <div id="bots-list-container" class="bots-list-wrapper">
+                        <!-- Injected via JS -->
+                    </div>
+
+                    <div class="privacy-section-header" style="margin-top:20px;">Como Conectar seu Bot na VPS / Host (Python)</div>
+                    <div class="bot-code-example-box">
+                        <pre><code># Script Python para rodar na sua VPS (Long Polling):
+import requests, time
+
+TOKEN = "SEU_TOKEN_AQUI"
+BASE = f"http://localhost:3000/api/bot{TOKEN}"
+offset = 0
+
+print(f"🤖 Bot iniciado com sucesso!")
+
+while True:
+    try:
+        r = requests.get(f"{BASE}/getUpdates?offset={offset}&timeout=20").json()
+        for update in r.get("result", []):
+            offset = update["update_id"] + 1
+            msg = update.get("message", {})
+            chat_id = msg.get("chat", {}).get("id")
+            text = msg.get("text", "")
+            user = msg.get("from", {}).get("first_name", "Alguém")
+            
+            print(f"[{user}]: {text}")
+            
+            # Resposta customizada do seu bot:
+            if text == "/ping":
+                requests.post(f"{BASE}/sendMessage", json={
+                    "chat_id": chat_id,
+                    "text": f"Pong! Olá {user}, bot 100% online!"
+                })
+    except Exception as e:
+        time.sleep(2)</code></pre>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- ==========================================================================
+             MAIN CHAT VIEWPORT (RIGHT PANEL)
+             ========================================================================== -->
+        <main class="wa-chat-viewport" id="chat-viewport">
+            
+            <!-- EMPTY STATE INTRO SCREEN -->
+            <div class="wa-intro-screen" id="intro-screen">
+                <div class="intro-content-box">
+                    <div class="intro-illustration">
+                        <i class="fa-solid fa-shield-halved" style="color:var(--wa-green); font-size:64px;"></i>
+                    </div>
+                    <h2>ZapAnon</h2>
+                    <p>Bate-papo anônimo e conversas seguras com criptografia de ponta a ponta (AES-256).<br>Envie mensagens, áudios, fotos e figurinhas com privacidade absoluta e isolamento total de sessões.</p>
+                    <div class="intro-footer-lock">
+                        <i class="fa-solid fa-lock"></i> Protegido com a tecnologia de criptografia de ponta a ponta
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTIVE CHAT SCREEN -->
+            <div class="wa-active-chat" id="active-chat-container">
+                
+                <!-- Chat Top Header -->
+                <header class="chat-view-header">
+                    <button class="mobile-back-btn" id="btn-chat-back" title="Voltar"><i class="fa-solid fa-arrow-left"></i></button>
+                    
+                    <div class="chat-header-user-info" id="btn-open-group-info" title="Dados do contato / grupo (clique para editar)">
+                        <div class="chat-header-avatar" id="chat-header-avatar-ring">
+                            <img id="chat-header-avatar-img" src="https://api.dicebear.com/7.x/identicon/svg?seed=ZapAnonChat" alt="">
+                        </div>
+                        <div class="chat-header-texts">
+                            <h4 id="chat-header-title">Nome da Conversa</h4>
+                            <span id="chat-header-subtitle">clique para dados e editar</span>
+                        </div>
+                    </div>
+
+                    <div class="chat-header-tools">
+                        <button id="btn-call-audio" class="wa-icon-btn" title="Chamada de Voz"><i class="fa-solid fa-phone"></i></button>
+                        <button id="btn-call-video" class="wa-icon-btn" title="Chamada de Vídeo"><i class="fa-solid fa-video"></i></button>
+                        <button id="btn-header-search" class="wa-icon-btn" title="Pesquisar na conversa"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        <div class="dropdown-wrapper">
+                            <button id="btn-chat-more-options" class="wa-icon-btn" title="Mais opções"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                            <div class="wa-dropdown-menu" id="chat-more-dropdown">
+                                <div class="dropdown-item" id="opt-view-info"><i class="fa-solid fa-circle-info"></i> Dados da conversa / Perfil</div>
+                                <div class="dropdown-item" id="opt-encryption-key"><i class="fa-solid fa-key" style="color:var(--wa-green);"></i> Criptografia E2EE (Senha Secreta)</div>
+                                <div class="dropdown-item" id="opt-wallpaper"><i class="fa-solid fa-image"></i> Papel de Parede</div>
+                                <div class="dropdown-item" id="opt-chat-analytics"><i class="fa-solid fa-chart-pie"></i> Estatísticas da conversa</div>
+                                <div class="dropdown-item" id="opt-chat-lock"><i class="fa-solid fa-lock"></i> Bloquear conversa com PIN</div>
+                                <div class="dropdown-item" id="opt-add-member"><i class="fa-solid fa-user-plus"></i> Adicionar participante</div>
+                                <div class="dropdown-item" id="opt-clear-chat"><i class="fa-solid fa-broom"></i> Limpar mensagens</div>
+                                <div class="dropdown-item" id="opt-mute-chat"><i class="fa-solid fa-bell-slash"></i> Silenciar notificações</div>
+                                <div class="dropdown-item" id="opt-leave-chat" style="color:#ea4335;"><i class="fa-solid fa-right-from-bracket" style="color:#ea4335;"></i> Apagar conversa</div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- In-Chat Search Bar Overlay -->
+                <div class="chat-search-bar-overlay" id="chat-search-bar-overlay">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="input-search-inside-chat" placeholder="Pesquisar mensagens nesta conversa...">
+                    <button id="btn-close-chat-search" class="wa-icon-btn"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <!-- Messages Wall -->
+                <div class="chat-messages-wall" id="messages-wall">
+                    <!-- Populated dynamically via JS -->
+                </div>
+
+                <!-- Typing Bar Indicator -->
+                <div class="chat-typing-status-bar" id="chat-typing-bar">
+                    <span class="typing-wave"><span></span><span></span><span></span></span>
+                    <span id="chat-typing-text">Alguém está digitando...</span>
+                </div>
+
+                <!-- Reply Preview Banner -->
+                <div class="chat-reply-banner" id="chat-reply-banner">
+                    <div class="reply-banner-bar"></div>
+                    <div class="reply-banner-content">
+                        <strong id="reply-banner-author">Respondendo a...</strong>
+                        <span id="reply-banner-snippet">Mensagem citada...</span>
+                    </div>
+                    <button id="btn-close-reply" class="btn-dismiss-reply"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <!-- Voice Recording Bar -->
+                <div class="chat-recording-bar" id="chat-recording-bar">
+                    <div class="rec-time-wrap">
+                        <span class="rec-red-circle"></span>
+                        <span id="rec-duration-label">00:00</span>
+                    </div>
+                    <div class="rec-waves-animation">
+                        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                    <button class="rec-btn-cancel" id="btn-cancel-voice" title="Cancelar Gravação"><i class="fa-solid fa-trash-can"></i></button>
+                    <button class="rec-btn-send" id="btn-send-voice" title="Enviar Áudio"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+
+                <!-- Media Preview Tray -->
+                <div class="chat-media-preview-tray" id="media-preview-tray">
+                    <img id="media-preview-thumb" src="" alt="Mídia">
+                    <button type="button" class="btn-view-once-tray" id="btn-toggle-view-once" title="Mídia de visualização única (1x)">
+                        <span class="view-once-badge-circle" id="view-once-badge-icon">1</span>
+                    </button>
+                    <button id="btn-remove-media-thumb" class="btn-close-media-tray"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <!-- Chat Footer Input Area -->
+                <footer class="chat-view-footer">
+                    <div class="footer-left-buttons">
+                        <button type="button" class="footer-icon-btn" id="btn-toggle-stickers-emojis" title="Figurinhas e Emojis">
+                            <i class="fa-regular fa-face-smile"></i>
+                        </button>
+                        
+                        <div class="dropdown-wrapper">
+                            <button type="button" class="footer-icon-btn" id="btn-toggle-attach-menu" title="Anexar">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                            <div class="wa-attach-popup" id="attach-popup-menu">
+                                <label for="input-chat-file" class="attach-item-btn" title="Fotos e vídeos">
+                                    <span class="attach-icon-circle bg-purple"><i class="fa-solid fa-image"></i></span>
+                                    <span>Fotos e vídeos</span>
+                                </label>
+                                <input type="file" id="input-chat-file" accept="image/*,video/*" style="display:none;">
+                                
+                                <div class="attach-item-btn" id="btn-open-poll-creator" title="Criar Enquete">
+                                    <span class="attach-icon-circle bg-gold"><i class="fa-solid fa-square-poll-vertical"></i></span>
+                                    <span>Enquete</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="footer-text-container">
+                        <textarea id="chat-input-textarea" placeholder="Mensagem" rows="1" maxlength="4000"></textarea>
+                    </div>
+
+                    <div class="footer-right-buttons">
+                        <button type="button" class="action-circle-btn" id="btn-action-send-or-mic" title="Mensagem de Voz ou Enviar">
+                            <i id="action-btn-icon" class="fa-solid fa-microphone"></i>
+                        </button>
+                    </div>
+                </footer>
+
+                <!-- STICKERS & EMOJIS TRAY -->
+                <div class="stickers-emoji-panel" id="stickers-emoji-panel">
+                    <div class="stickers-panel-tabs">
+                        <button class="tab-btn active" data-tab="stickers"><i class="fa-regular fa-note-sticky"></i> Figurinhas</button>
+                        <button class="tab-btn" data-tab="emojis"><i class="fa-regular fa-face-smile"></i> Emojis</button>
+                    </div>
+
+                    <div class="panel-tab-content active" id="tab-content-stickers">
+                        <div class="sticker-search-create-bar">
+                            <div class="sticker-search-pill">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="input-search-stickers-gifs" placeholder="Pesquisar figurinhas ou GIFs...">
+                            </div>
+                            <label for="input-create-sticker" class="btn-create-sticker-pill" title="Criar figurinha a partir de foto, GIF ou vídeo de até 10s">
+                                <i class="fa-solid fa-plus"></i> Criar
+                            </label>
+                            <input type="file" id="input-create-sticker" accept="image/*,image/gif,video/mp4,video/webm,video/quicktime" style="display:none;">
+                        </div>
+                        <div class="sticker-packs-nav" id="sticker-packs-nav"></div>
+                        <div class="stickers-grid" id="stickers-grid-items"></div>
+                    </div>
+
+                    <div class="panel-tab-content" id="tab-content-emojis">
+                        <div class="emoji-categories-bar">
+                            <button class="emoji-cat-btn active" data-cat="all">Tudo</button>
+                            <button class="emoji-cat-btn" data-cat="smileys">😀 Rostos</button>
+                            <button class="emoji-cat-btn" data-cat="gestures">👍 Gestos</button>
+                            <button class="emoji-cat-btn" data-cat="hearts">❤️ Amor</button>
+                            <button class="emoji-cat-btn" data-cat="animals">🐶 Animais</button>
+                            <button class="emoji-cat-btn" data-cat="food">🍔 Comida</button>
+                            <button class="emoji-cat-btn" data-cat="objects">💡 Objetos</button>
+                        </div>
+                        <div class="emojis-grid" id="emojis-grid-items">
+                            <span data-cat="smileys">😀</span><span data-cat="smileys">😃</span><span data-cat="smileys">😄</span><span data-cat="smileys">😁</span><span data-cat="smileys">😆</span><span data-cat="smileys">😅</span>
+                            <span data-cat="smileys">🤣</span><span data-cat="smileys">😂</span><span data-cat="smileys">🙂</span><span data-cat="smileys">🙃</span><span data-cat="smileys">😉</span><span data-cat="smileys">😊</span>
+                            <span data-cat="smileys">😇</span><span data-cat="smileys">🥰</span><span data-cat="smileys">😍</span><span data-cat="smileys">🤩</span><span data-cat="smileys">😘</span><span data-cat="smileys">😗</span>
+                            <span data-cat="smileys">😚</span><span data-cat="smileys">😋</span><span data-cat="smileys">😛</span><span data-cat="smileys">😜</span><span data-cat="smileys">🤪</span><span data-cat="smileys">😝</span>
+                            <span data-cat="smileys">🤑</span><span data-cat="smileys">🤗</span><span data-cat="smileys">🤭</span><span data-cat="smileys">🤫</span><span data-cat="smileys">🤔</span><span data-cat="smileys">🤐</span>
+                            <span data-cat="smileys">🤨</span><span data-cat="smileys">😐</span><span data-cat="smileys">😑</span><span data-cat="smileys">😶</span><span data-cat="smileys">😏</span><span data-cat="smileys">😒</span>
+                            <span data-cat="smileys">🙄</span><span data-cat="smileys">😬</span><span data-cat="smileys">🤥</span><span data-cat="smileys">😌</span><span data-cat="smileys">😔</span><span data-cat="smileys">😪</span>
+                            <span data-cat="smileys">🤤</span><span data-cat="smileys">😴</span><span data-cat="smileys">😷</span><span data-cat="smileys">🤒</span><span data-cat="smileys">🤕</span><span data-cat="smileys">🤢</span>
+                            <span data-cat="smileys">🤮</span><span data-cat="smileys">🤧</span><span data-cat="smileys">🥵</span><span data-cat="smileys">🥶</span><span data-cat="smileys">🥴</span><span data-cat="smileys">😵</span>
+                            <span data-cat="smileys">🤯</span><span data-cat="smileys">🤠</span><span data-cat="smileys">🥳</span><span data-cat="smileys">😎</span><span data-cat="smileys">🤓</span><span data-cat="smileys">🧐</span>
+                            <span data-cat="smileys">😕</span><span data-cat="smileys">😟</span><span data-cat="smileys">🙁</span><span data-cat="smileys">😮</span><span data-cat="smileys">😯</span><span data-cat="smileys">😲</span>
+                            <span data-cat="smileys">😳</span><span data-cat="smileys">🥺</span><span data-cat="smileys">😦</span><span data-cat="smileys">😧</span><span data-cat="smileys">😨</span><span data-cat="smileys">😰</span>
+                            <span data-cat="smileys">😥</span><span data-cat="smileys">😢</span><span data-cat="smileys">😭</span><span data-cat="smileys">😱</span><span data-cat="smileys">😖</span><span data-cat="smileys">😣</span>
+                            <span data-cat="smileys">😞</span><span data-cat="smileys">😓</span><span data-cat="smileys">😩</span><span data-cat="smileys">😫</span><span data-cat="smileys">🥱</span><span data-cat="smileys">😤</span>
+                            <span data-cat="smileys">😡</span><span data-cat="smileys">😠</span><span data-cat="smileys">🤬</span><span data-cat="smileys">😈</span><span data-cat="smileys">👿</span><span data-cat="smileys">💀</span>
+                            <span data-cat="smileys">☠️</span><span data-cat="smileys">💩</span><span data-cat="smileys">🤡</span><span data-cat="smileys">ghost</span><span data-cat="smileys">👽</span><span data-cat="smileys">🤖</span>
+                            <span data-cat="gestures">👍</span><span data-cat="gestures">👎</span><span data-cat="gestures">👊</span><span data-cat="gestures">✊</span><span data-cat="gestures">🤛</span><span data-cat="gestures">🤜</span>
+                            <span data-cat="gestures">👏</span><span data-cat="gestures">🙌</span><span data-cat="gestures">👐</span><span data-cat="gestures">🤲</span><span data-cat="gestures">🤝</span><span data-cat="gestures">🙏</span>
+                            <span data-cat="gestures">✌️</span><span data-cat="gestures">🤟</span><span data-cat="gestures">🤘</span><span data-cat="gestures">🤙</span><span data-cat="gestures">👈</span><span data-cat="gestures">👉</span>
+                            <span data-cat="gestures">👆</span><span data-cat="gestures">🖕</span><span data-cat="gestures">👇</span><span data-cat="gestures">☝️</span><span data-cat="gestures">✋</span><span data-cat="gestures">🖐️</span>
+                            <span data-cat="gestures">🖖</span><span data-cat="gestures">👋</span><span data-cat="gestures">💪</span><span data-cat="gestures">🦾</span><span data-cat="gestures">🖕</span><span data-cat="gestures">✍️</span>
+                            <span data-cat="hearts">❤️</span><span data-cat="hearts">🧡</span><span data-cat="hearts">💛</span><span data-cat="hearts">💚</span><span data-cat="hearts">💙</span><span data-cat="hearts">💜</span>
+                            <span data-cat="hearts">🖤</span><span data-cat="hearts">🤍</span><span data-cat="hearts">🤎</span><span data-cat="hearts">💔</span><span data-cat="hearts">❣️</span><span data-cat="hearts">💕</span>
+                            <span data-cat="hearts">💞</span><span data-cat="hearts">💓</span><span data-cat="hearts">💗</span><span data-cat="hearts">💖</span><span data-cat="hearts">💘</span><span data-cat="hearts">💝</span>
+                            <span data-cat="animals">🐶</span><span data-cat="animals">🐱</span><span data-cat="animals">🐭</span><span data-cat="animals">🐹</span><span data-cat="animals">🐰</span><span data-cat="animals">🦊</span>
+                            <span data-cat="animals">🐻</span><span data-cat="animals">🐼</span><span data-cat="animals">🐨</span><span data-cat="animals">🐯</span><span data-cat="animals">🦁</span><span data-cat="animals">🐮</span>
+                            <span data-cat="animals">🐷</span><span data-cat="animals">🐸</span><span data-cat="animals">🐵</span><span data-cat="animals">🙈</span><span data-cat="animals">🙉</span><span data-cat="animals">🙊</span>
+                            <span data-cat="food">🍏</span><span data-cat="food">🍎</span><span data-cat="food">🍐</span><span data-cat="food">🍊</span><span data-cat="food">🍋</span><span data-cat="food">🍌</span>
+                            <span data-cat="food">🍉</span><span data-cat="food">🍇</span><span data-cat="food">🍓</span><span data-cat="food">🫐</span><span data-cat="food">🍈</span><span data-cat="food">🍒</span>
+                            <span data-cat="food">🍑</span><span data-cat="food">🥭</span><span data-cat="food">🍍</span><span data-cat="food">🥥</span><span data-cat="food">🥝</span><span data-cat="food">🍅</span>
+                            <span data-cat="food">🍆</span><span data-cat="food">🥑</span><span data-cat="food">🥦</span><span data-cat="food">🥬</span><span data-cat="food">🥒</span><span data-cat="food">🌶️</span>
+                            <span data-cat="food">🌽</span><span data-cat="food">🥕</span><span data-cat="food">🧄</span><span data-cat="food">🧅</span><span data-cat="food">🥔</span><span data-cat="food">🍠</span>
+                            <span data-cat="food">🥐</span><span data-cat="food">🥯</span><span data-cat="food">🍞</span><span data-cat="food">🥖</span><span data-cat="food">🥨</span><span data-cat="food">🧀</span>
+                            <span data-cat="food">🥚</span><span data-cat="food">🍳</span><span data-cat="food">🧈</span><span data-cat="food">🥞</span><span data-cat="food">🧇</span><span data-cat="food">🥓</span>
+                            <span data-cat="food">🥩</span><span data-cat="food">🍗</span><span data-cat="food">🍖</span><span data-cat="food">🌭</span><span data-cat="food">🍔</span><span data-cat="food">🍟</span>
+                            <span data-cat="food">🍕</span><span data-cat="food">🫓</span><span data-cat="food">🥪</span><span data-cat="food">🥙</span><span data-cat="food">🧆</span><span data-cat="food">🌮</span>
+                            <span data-cat="food">🌯</span><span data-cat="food">🫔</span><span data-cat="food">🥗</span><span data-cat="food">🥘</span><span data-cat="food">🫕</span><span data-cat="food">🥫</span>
+                            <span data-cat="food">🍝</span><span data-cat="food">🍜</span><span data-cat="food">🍲</span><span data-cat="food">🍛</span><span data-cat="food">sushi</span><span data-cat="food">🍱</span>
+                            <span data-cat="objects">🔥</span><span data-cat="objects">⚡</span><span data-cat="objects">✨</span><span data-cat="objects">🌟</span><span data-cat="objects">💥</span><span data-cat="objects">💯</span>
+                            <span data-cat="objects">💡</span><span data-cat="objects">🔑</span><span data-cat="objects">👑</span><span data-cat="objects">💎</span><span data-cat="objects">🎉</span><span data-cat="objects">🎈</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ==========================================================================
+                 RIGHT DRAWER: DADOS DO GRUPO & EDIÇÃO COMPLETA (TELA CHEIA)
+                 ========================================================================== -->
+            <div class="wa-right-info-drawer" id="right-info-drawer">
+                <div class="right-drawer-header">
+                    <button id="btn-close-group-info" title="Fechar"><i class="fa-solid fa-xmark"></i></button>
+                    <h4 id="right-drawer-title">Dados do grupo</h4>
+                    <button id="btn-toggle-fullscreen-drawer" class="btn-icon-fullscreen" title="Alternar Tela Cheia"><i class="fa-solid fa-expand"></i></button>
+                </div>
+                <div class="right-drawer-content">
+                    
+                    <div class="group-info-cover-box">
+                        <img id="info-group-cover" src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1000&auto=format&fit=crop&q=80" alt="Capa">
+                        <label for="input-edit-group-cover" class="btn-change-cover-small" title="Alterar Foto de Capa">
+                            <i class="fa-solid fa-camera"></i> Alterar Capa
+                        </label>
+                        <input type="file" id="input-edit-group-cover" accept="image/*" style="display:none;">
+                    </div>
+
+                    <div class="group-info-avatar-box">
+                        <div class="group-avatar-ring">
+                            <img id="info-group-avatar" src="https://api.dicebear.com/7.x/identicon/svg?seed=Grupo" alt="Ícone">
+                            <label for="input-edit-group-avatar" class="avatar-camera-badge-sm" title="Alterar Foto de Perfil">
+                                <i class="fa-solid fa-camera"></i>
+                            </label>
+                            <input type="file" id="input-edit-group-avatar" accept="image/*" style="display:none;">
+                        </div>
+                        <button type="button" id="btn-dice-edit-group-avatar" class="btn-random-avatar-pill" style="margin-top:6px; margin-bottom:8px;">
+                            <i class="fa-solid fa-dice"></i> Gerar Ícone Anônimo
+                        </button>
+
+                        <div class="group-name-editable-wrapper">
+                            <input type="text" id="input-inline-group-name" maxlength="45" placeholder="Nome">
+                            <button id="btn-save-group-name-inline" class="btn-save-inline-pill" title="Salvar nome">
+                                <i class="fa-solid fa-check"></i> Salvar Nome
+                            </button>
+                        </div>
+                        <p id="info-group-members-count">Grupo • 0 participantes</p>
+                    </div>
+
+                    <div class="group-info-section" id="group-desc-section">
+                        <label>Descrição & Regras</label>
+                        <div class="editable-desc-box">
+                            <textarea id="textarea-group-desc" rows="3" maxlength="250" placeholder="Adicionar descrição"></textarea>
+                            <button id="btn-save-group-desc" class="btn-save-check"><i class="fa-solid fa-check"></i> Salvar Descrição</button>
+                        </div>
+                    </div>
+
+                    <div class="group-info-section">
+                        <label>Personalização & Opções</label>
+
+                        <div class="group-setting-item-row" id="btn-trigger-wallpaper-modal" style="cursor:pointer;">
+                            <i class="fa-solid fa-image" style="color:var(--wa-green);"></i>
+                            <div style="flex:1;">
+                                <strong>Papel de Parede deste Chat</strong>
+                                <small id="current-wallpaper-label">Personalize o fundo da conversa ou grupo</small>
+                            </div>
+                            <i class="fa-solid fa-chevron-right chevron-icon"></i>
+                        </div>
+                        
+                        <div class="group-setting-item-row" id="group-disappearing-row">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                            <div style="flex:1;">
+                                <strong>Mensagens temporárias</strong>
+                                <small>Desaparecem automaticamente após o período</small>
+                            </div>
+                            <select id="select-group-disappearing" class="privacy-select">
+                                <option value="off">Desativadas</option>
+                                <option value="24h">24 horas</option>
+                                <option value="7d">7 dias</option>
+                                <option value="90d">90 dias</option>
+                            </select>
+                        </div>
+
+                        <div class="group-setting-item-row">
+                            <i class="fa-solid fa-bell-slash"></i>
+                            <div style="flex:1;">
+                                <strong>Silenciar notificações</strong>
+                                <small>Não receber notificações sonoras</small>
+                            </div>
+                            <input type="checkbox" id="check-group-mute" class="privacy-toggle">
+                        </div>
+                    </div>
+
+                    <div class="group-info-section">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:8px; flex-wrap:wrap;">
+                            <label style="margin:0;">Participantes</label>
+                            <div style="display:flex; gap:6px;">
+                                <button id="btn-copy-group-link-drawer" class="btn-add-member-pill" style="background: rgba(0, 168, 132, 0.15); color: var(--wa-green); border: 1px solid rgba(0, 168, 132, 0.3);" title="Convidar via link"><i class="fa-solid fa-link"></i> Link do Grupo</button>
+                                <button id="btn-open-add-member-modal" class="btn-add-member-pill"><i class="fa-solid fa-user-plus"></i> Adicionar</button>
+                            </div>
+                        </div>
+                        <div id="group-members-list-box" class="members-list-box">
+                            <!-- Injected via JS -->
+                        </div>
+                    </div>
+
+                    <div class="group-info-section">
+                        <button id="btn-action-leave-group" class="btn-danger-full-width">
+                            <i class="fa-solid fa-right-from-bracket"></i> Sair do Grupo
+                        </button>
+                    </div>
+
+                    <div class="group-info-section">
+                        <div class="encryption-row">
+                            <i class="fa-solid fa-lock"></i>
+                            <div>
+                                <strong>Criptografia</strong>
+                                <p style="font-size:12px;">As mensagens e arquivos deste grupo são protegidos com criptografia de ponta a ponta.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- ==========================================================================
+         MODALS
+         ========================================================================== -->
+    
+    <!-- MODAL 1: STATUS STORIES FULLSCREEN VIEWER -->
+    <div class="wa-status-viewer-modal" id="status-viewer-modal">
+        <div class="status-progress-bar-container">
+            <div class="status-progress-fill" id="status-progress-fill"></div>
+        </div>
+        <div class="status-viewer-header">
+            <div class="status-viewer-user">
+                <img id="viewer-user-avatar" src="" alt="">
+                <div>
+                    <h4 id="viewer-user-name" style="font-size:15px; font-weight:600;">Nome</h4>
+                    <span id="viewer-user-time" style="font-size:12px; opacity:0.8;">Hoje às 12:00</span>
+                </div>
+            </div>
+            <button id="btn-close-status-viewer"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="status-viewer-body" id="status-viewer-body"></div>
+    </div>
+
+    <!-- MODAL 2: CRIAR STATUS COM FOTO OU TEXTO COLORIDO -->
+    <div class="wa-modal-overlay" id="modal-create-status">
+        <div class="modal-window">
+            <div class="modal-title-row">
+                <h3>Criar Status (24h)</h3>
+                <button class="btn-modal-close" id="btn-close-create-status"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="status-creator-tabs">
+                <button type="button" class="tab-pill active" id="tab-status-text"><i class="fa-solid fa-font"></i> Texto</button>
+                <label for="input-status-photo" class="tab-pill" id="tab-status-photo"><i class="fa-solid fa-image"></i> Foto</label>
+                <input type="file" id="input-status-photo" accept="image/*" style="display:none;">
+            </div>
+
+            <div class="status-creator-preview" id="status-creator-preview" style="background:#00a884;">
+                <textarea id="input-status-text" placeholder="Digite seu status..." maxlength="200"></textarea>
+                <img id="status-photo-preview" src="" alt="" style="display:none;">
+            </div>
+
+            <div class="status-color-palette">
+                <span class="color-dot active" data-color="#00a884" style="background:#00a884;"></span>
+                <span class="color-dot" data-color="#3b82f6" style="background:#3b82f6;"></span>
+                <span class="color-dot" data-color="#ec4899" style="background:#ec4899;"></span>
+                <span class="color-dot" data-color="#8b5cf6" style="background:#8b5cf6;"></span>
+                <span class="color-dot" data-color="#f97316" style="background:#f97316;"></span>
+                <span class="color-dot" data-color="#1f2937" style="background:#1f2937;"></span>
+            </div>
+
+            <button type="button" id="btn-submit-status" class="wa-btn-send-status">
+                <i class="fa-solid fa-paper-plane"></i> Publicar no Status
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 3: CRIAR ENQUETE -->
+    <div class="wa-modal-overlay" id="modal-create-poll">
+        <div class="modal-window">
+            <div class="modal-title-row">
+                <h3>Criar Enquete</h3>
+                <button class="btn-modal-close" id="btn-close-create-poll"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="poll-form-body">
+                <label>Pergunta da Enquete</label>
+                <input type="text" id="input-poll-question" placeholder="Faça uma pergunta" maxlength="100">
+
+                <label>Opções de Voto</label>
+                <div id="poll-options-container">
+                    <input type="text" class="poll-option-input" placeholder="Opção 1" maxlength="60">
+                    <input type="text" class="poll-option-input" placeholder="Opção 2" maxlength="60">
+                </div>
+                <button type="button" id="btn-add-poll-option" class="btn-secondary-sm">+ Adicionar Opção</button>
+            </div>
+            <button type="button" id="btn-submit-poll" class="wa-btn-send-status">
+                <i class="fa-solid fa-square-poll-vertical"></i> Enviar Enquete
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 4: CRIAR NOVO BOT (BOTFATHER API) -->
+    <div class="wa-modal-overlay" id="modal-create-bot">
+        <div class="modal-window">
+            <div class="modal-title-row">
+                <h3><i class="fa-solid fa-robot" style="color:var(--wa-green);"></i> Novo Bot (BotFather)</h3>
+                <button class="btn-modal-close" id="btn-close-create-bot"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="poll-form-body">
+                <label>Nome do Bot (ex: Meu Bot VPS)</label>
+                <input type="text" id="input-bot-name" placeholder="Nome visível do Bot" maxlength="35" required>
+
+                <label>Username único (@nomedobot_bot)</label>
+                <input type="text" id="input-bot-username" placeholder="@meu_bot" maxlength="35" required>
+
+                <label>Descrição do Bot</label>
+                <input type="text" id="input-bot-desc" placeholder="O que seu bot faz? (ex: integrado na VPS)" maxlength="150">
+            </div>
+            <button type="button" id="btn-submit-create-bot" class="wa-btn-send-status">
+                <i class="fa-solid fa-key"></i> Gerar Bot & Token API
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 5: EDITAR PERFIL DO BOT -->
+    <div class="wa-modal-overlay" id="modal-edit-bot">
+        <div class="modal-window">
+            <div class="modal-title-row">
+                <h3><i class="fa-solid fa-pen-to-square" style="color:var(--wa-green);"></i> Editar Perfil do Bot</h3>
+                <button class="btn-modal-close" id="btn-close-edit-bot"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="poll-form-body">
+                <input type="hidden" id="edit-bot-token">
+                
+                <div style="text-align: center; margin-bottom: 12px;">
+                    <img id="edit-bot-avatar-preview" src="" alt="Avatar do Bot" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid var(--wa-green);">
+                    <div style="margin-top: 6px;">
+                        <label for="input-edit-bot-avatar" class="btn-secondary-sm" style="display: inline-block; cursor: pointer;">
+                            <i class="fa-solid fa-camera"></i> Mudar Foto do Bot
+                        </label>
+                        <input type="file" id="input-edit-bot-avatar" accept="image/*" style="display:none;">
+                    </div>
+                </div>
+
+                <label>Nome do Bot</label>
+                <input type="text" id="edit-bot-name" placeholder="Nome do Bot" maxlength="35" required>
+
+                <label>Descrição do Bot</label>
+                <textarea id="edit-bot-desc" rows="3" placeholder="Descrição do bot..." maxlength="250" style="width:100%; border:1px solid var(--wa-border); border-radius:8px; padding:10px; background:var(--wa-bg-header); color:var(--wa-text-main); font-family:inherit; resize:none;"></textarea>
+
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button type="button" id="btn-revoke-bot-token" class="btn-secondary-sm" style="flex:1; color:#ea4335; border-color:#ea4335;">
+                        <i class="fa-solid fa-arrows-rotate"></i> Revogar Token
+                    </button>
+                    <button type="button" id="btn-delete-bot-action" class="btn-secondary-sm" style="flex:1; color:#ea4335; border-color:#ea4335;">
+                        <i class="fa-solid fa-trash"></i> Deletar Bot
+                    </button>
+                </div>
+            </div>
+            <button type="button" id="btn-submit-edit-bot" class="wa-btn-send-status">
+                <i class="fa-solid fa-check"></i> Salvar Alterações
+            </button>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         MODAL: VISUALIZADOR DE STATUS DO GRUPO (STORIES)
+         ========================================================================== -->
+    <div class="wa-modal-overlay" id="modal-group-status-view">
+        <div class="status-viewer-container" style="background:#000; width:100%; height:100%; position:relative; display:flex; flex-direction:column;">
+            <div class="status-viewer-progress">
+                <div class="progress-bar-segment"><div class="progress-bar-fill" id="group-status-progress-fill" style="width:0%;"></div></div>
+            </div>
+            <div class="status-viewer-header" style="padding:10px 15px; display:flex; justify-content:space-between; align-items:center; color:#fff;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <img id="group-status-author-avatar" src="" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                    <div>
+                        <strong id="group-status-author-name">Nome</strong>
+                        <small id="group-status-time" style="display:block; opacity:0.7; font-size:12px;">Agora</small>
+                    </div>
+                </div>
+                <div style="display:flex; gap:15px;">
+                    <button id="btn-group-status-add" style="background:transparent; border:none; color:#fff; cursor:pointer; font-size:20px;"><i class="fa-solid fa-plus"></i></button>
+                    <button id="btn-group-status-delete" style="background:transparent; border:none; color:#ea4335; cursor:pointer; font-size:20px; display:none;"><i class="fa-solid fa-trash"></i></button>
+                    <button class="btn-modal-close" id="btn-close-group-status-view" style="color:#fff;"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+            
+            <div id="group-status-content-area" style="flex:1; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+                <!-- Left/Right Click Areas -->
+                <div id="group-status-click-prev" style="position:absolute; left:0; top:0; width:30%; height:100%; cursor:pointer; z-index:10;"></div>
+                <div id="group-status-click-next" style="position:absolute; right:0; top:0; width:30%; height:100%; cursor:pointer; z-index:10;"></div>
+                
+                <h2 id="group-status-text-display" style="color:#fff; text-align:center; padding:20px; font-size:28px; word-break:break-word; max-width:800px; display:none;"></h2>
+                <img id="group-status-img-display" src="" style="max-width:100%; max-height:100%; object-fit:contain; display:none;">
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 6: ADICIONAR PARTICIPANTE AO GRUPO -->
+    <div class="wa-modal-overlay" id="modal-add-member">
+        <div class="modal-window">
+            <div class="modal-title-row">
+                <h3><i class="fa-solid fa-user-plus" style="color:var(--wa-green);"></i> Adicionar Participante</h3>
+                <button class="btn-modal-close" id="btn-close-add-member"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="poll-form-body">
+                <label>Nome ou Apelido da Pessoa</label>
+                <input type="text" id="input-new-member-name" placeholder="Digite o nome do contato..." maxlength="40" required>
+            </div>
+            <button type="button" id="btn-submit-add-member" class="wa-btn-send-status">
+                <i class="fa-solid fa-check"></i> Adicionar ao Grupo
+            </button>
+
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--wa-border, rgba(255,255,255,0.1)); text-align: center;">
+                <button type="button" id="btn-copy-group-invite-link-modal" style="width: 100%; padding: 12px; border-radius: 20px; border: 1px solid var(--wa-green); background: rgba(0, 168, 132, 0.15); color: var(--wa-green); font-size: 13.5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <i class="fa-solid fa-link"></i> Convidar para o grupo via link
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 7: CRIAR NOVA COMUNIDADE -->
+    <div class="wa-modal-overlay" id="modal-create-community">
+        <div class="modal-window">
+            <div class="modal-title-row">
+                <h3><i class="fa-solid fa-users-line" style="color:var(--wa-green);"></i> Nova Comunidade</h3>
+                <button class="btn-modal-close" id="btn-close-create-community"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="poll-form-body">
+                <label>Nome da Comunidade</label>
+                <input type="text" id="input-community-name" placeholder="Ex: Comunidade Tech Brasil" maxlength="45" required>
+
+                <label>Descrição</label>
+                <input type="text" id="input-community-desc" placeholder="Objetivo da comunidade..." maxlength="200">
+            </div>
+            <button type="button" id="btn-submit-create-community" class="wa-btn-send-status">
+                <i class="fa-solid fa-plus"></i> Criar Comunidade
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 8: MUDAR PAPEL DE PAREDE DO CHAT OU GRUPO -->
+    <div class="wa-modal-overlay" id="modal-wallpaper">
+        <div class="modal-window modal-wallpaper-window">
+            <div class="modal-title-row">
+                <h3><i class="fa-solid fa-image" style="color:var(--wa-green);"></i> Papel de Parede da Conversa</h3>
+                <button class="btn-modal-close" id="btn-close-wallpaper"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p style="font-size:13.5px; color:var(--wa-text-sub); margin-bottom:14px;">Escolha um tema ou envie uma imagem personalizada para o fundo do chat.</p>
+
+            <div class="wallpaper-options-grid">
+                <div class="wallpaper-card active" data-wp="default">
+                    <div class="wp-preview wp-preview-default"></div>
+                    <span>Padrão ZapAnon</span>
+                </div>
+                <div class="wallpaper-card" data-wp="dark">
+                    <div class="wp-preview wp-preview-dark"></div>
+                    <span>Escuro Sólido</span>
+                </div>
+                <div class="wallpaper-card" data-wp="cyber">
+                    <div class="wp-preview wp-preview-cyber"></div>
+                    <span>Cyber Matrix</span>
+                </div>
+                <div class="wallpaper-card" data-wp="blue">
+                    <div class="wp-preview wp-preview-blue"></div>
+                    <span>Azul Elegante</span>
+                </div>
+                <div class="wallpaper-card" data-wp="emerald">
+                    <div class="wp-preview wp-preview-emerald"></div>
+                    <span>Verde Esmeralda</span>
+                </div>
+                <div class="wallpaper-card" data-wp="purple">
+                    <div class="wp-preview wp-preview-purple"></div>
+                    <span>Roxo Noturno</span>
+                </div>
+            </div>
+
+            <div style="margin-top:16px; border-top:1px solid var(--wa-border); padding-top:14px;">
+                <label for="input-custom-wallpaper-file" class="btn-custom-wp-upload">
+                    <i class="fa-solid fa-upload"></i> Enviar Foto do Seu Dispositivo
+                </label>
+                <input type="file" id="input-custom-wallpaper-file" accept="image/*" style="display:none;">
+            </div>
+
+            <div style="display:flex; gap:10px; margin-top:16px;">
+                <button type="button" id="btn-reset-wallpaper" class="btn-secondary-sm" style="flex:1;">
+                    <i class="fa-solid fa-rotate-left"></i> Restaurar Padrão
+                </button>
+                <button type="button" id="btn-apply-wallpaper" class="wa-btn-send-status" style="flex:1; margin:0;">
+                    <i class="fa-solid fa-check"></i> Aplicar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 9: VISUALIZADOR DE PERFIL EM TELA CHEIA (PC E CELULAR) -->
+    <div class="wa-user-profile-fullscreen-overlay" id="modal-user-profile">
+        <div class="user-profile-header-bar">
+            <button id="btn-close-user-profile" title="Voltar"><i class="fa-solid fa-arrow-left"></i></button>
+            <h3 id="user-profile-top-title">Dados do Contato</h3>
+            <button id="btn-share-user-profile" class="wa-icon-btn" title="Compartilhar Perfil"><i class="fa-solid fa-share-nodes"></i></button>
+        </div>
+        
+        <div class="user-profile-scroll-body">
+            <div class="profile-hero-banner">
+                <img id="user-profile-cover-img" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1000&auto=format&fit=crop&q=80" alt="Capa">
+                <div class="profile-hero-avatar-wrapper">
+                    <img id="user-profile-avatar-img" src="" alt="Avatar">
+                </div>
+            </div>
+
+            <div class="profile-main-name-box">
+                <h2 id="user-profile-display-name">Nome do Contato</h2>
+                <p id="user-profile-username-tag">@usuario_anonimo</p>
+                <span class="user-online-badge-pill" id="user-profile-online-badge"><i class="fa-solid fa-circle"></i> Online</span>
+            </div>
+
+            <div class="profile-actions-grid">
+                <button class="profile-action-btn" id="btn-user-profile-action-msg">
+                    <i class="fa-solid fa-comment"></i>
+                    <span>Mensagem</span>
+                </button>
+                <button class="profile-action-btn" id="btn-user-profile-action-call">
+                    <i class="fa-solid fa-phone"></i>
+                    <span>Chamada</span>
+                </button>
+                <button class="profile-action-btn" id="btn-user-profile-action-wallpaper">
+                    <i class="fa-solid fa-image"></i>
+                    <span>Papel de Parede</span>
+                </button>
+                <button class="profile-action-btn" id="btn-user-profile-action-block" style="color:#ea4335;">
+                    <i class="fa-solid fa-ban"></i>
+                    <span>Bloquear</span>
+                </button>
+            </div>
+
+            <div class="profile-details-card">
+                <div class="profile-detail-row">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <div>
+                        <label>Recado / Sobre</label>
+                        <p id="user-profile-about-text">Disponível no ZapAnon</p>
+                    </div>
+                </div>
+                <div class="profile-detail-row">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <div>
+                        <label>Segurança & Anonimato</label>
+                        <p>Mensagens e arquivos protegidos com criptografia de ponta a ponta.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 10: METADADOS DA FIGURINHA (WHATSAPP EXIF) -->
+    <div class="wa-modal-overlay" id="modal-sticker-info">
+        <div class="modal-window" style="max-width:380px;">
+            <div class="modal-title-row">
+                <h3><i class="fa-regular fa-note-sticky" style="color:var(--wa-green);"></i> Dados da Figurinha</h3>
+                <button class="btn-modal-close" id="btn-close-sticker-info"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div style="text-align:center; padding:15px 0;">
+                <img id="sticker-info-preview-img" src="" alt="Figurinha" style="width:120px; height:120px; object-fit:contain; margin-bottom:12px;">
+                <h4 id="sticker-info-pack-name" style="font-size:16px; font-weight:700; color:var(--wa-text-main);">Pacote Oficial</h4>
+                <p id="sticker-info-author-name" style="font-size:13px; color:var(--wa-green); font-weight:600;">Criado por: Corvo Hacker</p>
+                <small id="sticker-info-date-tag" style="font-size:11px; color:var(--wa-text-sub); display:block; margin-top:4px;">Metadados WhatsApp Web Standard</small>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <button type="button" id="btn-sticker-add-favorite" class="wa-btn-send-status" style="margin:0;">
+                    <i class="fa-solid fa-star"></i> Adicionar aos Favoritos
+                </button>
+                <button type="button" id="btn-sticker-forward-action" class="btn-secondary-sm" style="width:100%;">
+                    <i class="fa-solid fa-share"></i> Encaminhar Figurinha
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 11: REAGIR COM QUALQUER EMOJI OU FIGURINHA -->
+    <div class="wa-modal-overlay" id="modal-custom-reaction">
+        <div class="modal-window" style="max-width:440px;">
+            <div class="modal-title-row">
+                <h3><i class="fa-regular fa-face-smile" style="color:var(--wa-green);"></i> Reagir à Mensagem</h3>
+                <button class="btn-modal-close" id="btn-close-custom-reaction"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="sticker-search-pill" style="margin:10px 0;">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="input-search-reaction-emoji" placeholder="Pesquisar emoji para reagir...">
+            </div>
+            <div class="emojis-grid" id="reaction-emojis-grid" style="max-height:260px; overflow-y:auto; padding:8px 0;">
+                <span>👍</span><span>❤️</span><span>😂</span><span>😮</span><span>😢</span><span>🙏</span>
+                <span>🔥</span><span>🎉</span><span>🚀</span><span>👑</span><span>💩</span><span>💀</span>
+                <span>💯</span><span>✨</span><span>😍</span><span>🤩</span><span>🥳</span><span>😎</span>
+                <span>👏</span><span>🙌</span><span>🤝</span><span>💪</span><span>🥳</span><span>🤠</span>
+                <span>🤪</span><span>🤯</span><span>🥳</span><span>🥶</span><span>🥵</span><span>🥺</span>
+                <span>👻</span><span>👽</span><span>🤖</span><span>🤡</span><span>☠️</span><span>👀</span>
+                <span>⚡</span><span>🌟</span><span>💥</span><span>🖤</span><span>🤍</span><span>🤎</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 12: CHAMADA DE VOZ E VÍDEO REAL WEBRTC (TELA CHEIA) -->
+    <div class="wa-call-active-fullscreen-overlay" id="modal-call-active">
+        <div class="call-top-header">
+            <span class="call-type-badge" id="call-type-badge"><i class="fa-solid fa-phone"></i> Chamada de Voz</span>
+            <span class="call-timer-txt" id="call-timer-txt">Chamando...</span>
+        </div>
+        <div class="call-avatar-center-box">
+            <div class="call-avatar-pulse-ring">
+                <img id="call-partner-avatar" src="" alt="Contato">
+            </div>
+            <h3 id="call-partner-name">Nome do Contato</h3>
+            <p id="call-status-subtitle">Criptografia de ponta a ponta</p>
+        </div>
+
+        <div class="call-video-streams-container" id="call-video-container" style="display:none;">
+            <video id="remote-video-stream" autoplay playsinline></video>
+            <video id="local-video-stream" autoplay playsinline muted></video>
+        </div>
+
+        <div class="call-controls-bottom-bar">
+            <button class="call-control-circle-btn" id="btn-call-toggle-mic" title="Mutar Microfone">
+                <i class="fa-solid fa-microphone"></i>
+            </button>
+            <button class="call-control-circle-btn danger" id="btn-call-end-action" title="Desligar Chamada">
+                <i class="fa-solid fa-phone-slash"></i>
+            </button>
+            <button class="call-control-circle-btn success" id="btn-call-accept-action" title="Atender Chamada" style="display:none;">
+                <i class="fa-solid fa-phone"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 15: CORTADOR E ENQUADRADOR DE FOTO DE PERFIL / CAPA -->
+    <div class="wa-modal" id="modal-photo-cropper">
+        <div class="modal-card modal-card-cropper" style="max-width:440px; width:92%;">
+            <div class="modal-card-header" style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid var(--wa-border);">
+                <h3 style="font-size:16px; margin:0; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-crop-simple" style="color:var(--wa-green);"></i> Ajustar e Cortar Foto</h3>
+                <button class="btn-modal-close" id="btn-close-cropper" style="background:none; border:none; color:var(--wa-text-sub); cursor:pointer; font-size:18px;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="cropper-container-box" style="padding:20px; display:flex; flex-direction:column; align-items:center; background:var(--wa-bg-panel);">
+                <div class="cropper-viewport-frame" id="cropper-viewport-frame" style="width:280px; height:280px; position:relative; overflow:hidden; border:2px dashed var(--wa-green); border-radius:50%; background:#000; cursor:grab;">
+                    <canvas id="cropper-canvas" style="position:absolute; top:0; left:0; pointer-events:none;"></canvas>
+                </div>
+                <small style="margin-top:10px; color:var(--wa-text-sub); font-size:12px;"><i class="fa-solid fa-hand-pointer"></i> Arraste a imagem para posicionar</small>
+            </div>
+            <div class="cropper-controls-bar" style="display:flex; align-items:center; justify-content:center; gap:12px; padding:12px 20px; background:var(--wa-bg-header);">
+                <button type="button" class="wa-icon-btn" id="btn-cropper-zoom-out" title="Afastar"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+                <input type="range" id="input-cropper-zoom" min="0.5" max="3" step="0.05" value="1" style="width:140px; accent-color:var(--wa-green);">
+                <button type="button" class="wa-icon-btn" id="btn-cropper-zoom-in" title="Aproximar"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                <button type="button" class="wa-icon-btn" id="btn-cropper-rotate" title="Girar 90°"><i class="fa-solid fa-rotate-right"></i></button>
+            </div>
+            <div class="modal-card-footer" style="display:flex; justify-content:flex-end; gap:10px; padding:14px 20px; border-top:1px solid var(--wa-border);">
+                <button type="button" class="btn-secondary-sm" id="btn-cropper-cancel" style="padding:8px 16px; border-radius:18px; border:1px solid var(--wa-border); background:transparent; color:var(--wa-text-main); cursor:pointer;">Cancelar</button>
+                <button type="button" class="wa-btn-floating-confirm" id="btn-cropper-confirm" title="Aplicar Foto" style="padding:8px 20px; border-radius:18px; background:var(--wa-green); color:#fff; border:none; cursor:pointer; font-weight:600; display:flex; align-items:center; gap:6px;">
+                    <i class="fa-solid fa-check"></i> Aplicar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 13: MODIFICADOR DE VOZ COM EFEITOS -->
+    <div class="wa-modal-overlay" id="modal-voice-effects">
+        <div class="modal-window" style="max-width:400px;">
+            <div class="modal-title-row">
+                <h3><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--wa-green);"></i> Modificador de Voz</h3>
+                <button class="btn-modal-close" id="btn-close-voice-effects"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p style="font-size:13px; color:var(--wa-text-sub); margin-bottom:12px;">Escolha um efeito para aplicar no seu áudio antes de enviar:</p>
+            <div class="voice-effects-grid">
+                <div class="voice-effect-card active" data-effect="normal">
+                    <i class="fa-solid fa-user"></i>
+                    <span>Normal</span>
+                </div>
+                <div class="voice-effect-card" data-effect="robot">
+                    <i class="fa-solid fa-robot"></i>
+                    <span>Robô Cyber</span>
+                </div>
+                <div class="voice-effect-card" data-effect="chipmunk">
+                    <i class="fa-solid fa-paw"></i>
+                    <span>Esquilo</span>
+                </div>
+                <div class="voice-effect-card" data-effect="monster">
+                    <i class="fa-solid fa-dragon"></i>
+                    <span>Monstro</span>
+                </div>
+                <div class="voice-effect-card" data-effect="radio">
+                    <i class="fa-solid fa-radio"></i>
+                    <span>Rádio Antigo</span>
+                </div>
+            </div>
+            <button type="button" id="btn-confirm-voice-send" class="wa-btn-send-status" style="margin-top:16px;">
+                <i class="fa-solid fa-paper-plane"></i> Enviar Áudio com Efeito
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 14: EDITOR DE FOTO ANTES DE ENVIAR (CANVAS) -->
+    <div class="wa-modal-overlay" id="modal-image-editor">
+        <div class="modal-window" style="max-width:550px; width:95%;">
+            <div class="modal-title-row">
+                <h3><i class="fa-solid fa-pen-ruler" style="color:var(--wa-green);"></i> Editor de Foto</h3>
+                <button class="btn-modal-close" id="btn-close-image-editor"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="image-editor-toolbar">
+                <button type="button" class="editor-tool-btn active" id="btn-tool-draw" title="Desenhar"><i class="fa-solid fa-paintbrush"></i></button>
+                <button type="button" class="editor-tool-btn" id="btn-tool-text" title="Texto"><i class="fa-solid fa-font"></i></button>
+                <input type="color" id="editor-color-picker" value="#00a884" title="Cor do Pincel">
+                <button type="button" class="editor-tool-btn" id="btn-editor-clear" title="Limpar"><i class="fa-solid fa-rotate-left"></i></button>
+            </div>
+            <div class="editor-canvas-container">
+                <canvas id="editor-canvas"></canvas>
+            </div>
+            <button type="button" id="btn-send-edited-photo" class="wa-btn-send-status" style="margin-top:12px;">
+                <i class="fa-solid fa-paper-plane"></i> Enviar Foto Editada
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 15: ESTATÍSTICAS DA CONVERSA (CHAT ANALYTICS) -->
+    <div class="wa-modal-overlay" id="modal-chat-analytics">
+        <div class="modal-window" style="max-width:440px;">
+            <div class="modal-title-row">
+                <h3><i class="fa-solid fa-chart-pie" style="color:var(--wa-green);"></i> Estatísticas da Conversa</h3>
+                <button class="btn-modal-close" id="btn-close-chat-analytics"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="analytics-metrics-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px;">
+                <div class="metric-card">
+                    <strong id="analytics-total-msgs">0</strong>
+                    <small>Total de Mensagens</small>
+                </div>
+                <div class="metric-card">
+                    <strong id="analytics-media-count">0</strong>
+                    <small>Fotos & Mídias</small>
+                </div>
+                <div class="metric-card">
+                    <strong id="analytics-audios-count">0</strong>
+                    <small>Mensagens de Voz</small>
+                </div>
+                <div class="metric-card">
+                    <strong id="analytics-stickers-count">0</strong>
+                    <small>Figurinhas Enviadas</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 16: BLOQUEIO DE CONVERSA COM PIN -->
+    <div class="wa-modal-overlay" id="modal-pin-lock">
+        <div class="modal-window" style="max-width:360px;">
+            <div class="modal-title-row">
+                <h3><i class="fa-solid fa-lock" style="color:var(--wa-green);"></i> Bloquear com PIN</h3>
+                <button class="btn-modal-close" id="btn-close-pin-lock"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p style="font-size:13px; color:var(--wa-text-sub); margin-bottom:12px;">Digite um PIN de 4 dígitos para proteger esta conversa:</p>
+            <input type="password" id="input-chat-pin" maxlength="4" placeholder="****" style="width:100%; text-align:center; font-size:24px; letter-spacing:8px; padding:10px; border:1px solid var(--wa-border); border-radius:8px; margin-bottom:16px;">
+            <button type="button" id="btn-submit-chat-pin" class="wa-btn-send-status" style="margin:0;">
+                <i class="fa-solid fa-shield-halved"></i> Proteger Conversa
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 17: CRIPTOGRAFIA E2EE AES-256 COM SENHA SECRETA -->
+    <div class="wa-modal-overlay" id="modal-encryption-key">
+        <div class="modal-window" style="max-width:440px;">
+            <div class="modal-title-row">
+                <h3><i class="fa-solid fa-key" style="color:var(--wa-green);"></i> Criptografia E2EE (AES-256)</h3>
+                <button class="btn-modal-close" id="btn-close-encryption-key"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p style="font-size:13px; color:var(--wa-text-sub); margin-bottom:12px; line-height:1.4;">
+                Defina uma <strong>senha secreta compartilhada</strong> para esta conversa. As mensagens serão cifradas matematicamente no seu navegador com <strong>AES-256-GCM</strong>. O servidor e terceiros só verão um código indecifrável. <strong>Apenas quem souber esta senha exata conseguirá ler!</strong>
+            </p>
+            <input type="password" id="input-encryption-password" placeholder="Digite a senha secreta da conversa..." style="width:100%; font-size:15px; padding:10px; border:1px solid var(--wa-border); border-radius:8px; margin-bottom:14px; background:var(--wa-bg-input); color:var(--wa-text-main);">
+            
+            <div style="display:flex; gap:10px;">
+                <button type="button" id="btn-disable-encryption" class="btn-secondary-sm" style="flex:1;">
+                    <i class="fa-solid fa-lock-open"></i> Desativar E2EE
+                </button>
+                <button type="button" id="btn-save-encryption-key" class="wa-btn-send-status" style="flex:1; margin:0;">
+                    <i class="fa-solid fa-shield-halved"></i> Salvar & Ativar E2EE
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 18: VISUALIZADOR DE CANAL OFICIAL (PUBLICAÇÕES E UPDATES) -->
+    <div class="wa-user-profile-fullscreen-overlay" id="modal-channel-view">
+        <div class="user-profile-header-bar">
+            <button id="btn-close-channel-view" title="Voltar"><i class="fa-solid fa-arrow-left"></i></button>
+            <h3 id="channel-view-top-title">Canal Oficial</h3>
+            <button id="btn-channel-toggle-follow" class="btn-create-comm-pill" style="margin:0;">Seguir</button>
+        </div>
+        <div class="user-profile-scroll-body" style="padding:16px; max-width:640px; margin:0 auto;">
+            <div style="text-align:center; padding:20px 0; border-bottom:1px solid var(--wa-border);">
+                <img id="channel-view-avatar" src="" alt="Canal" style="width:80px; height:80px; border-radius:50%; object-fit:cover; margin-bottom:10px; border:2px solid var(--wa-green);">
+                <h2 id="channel-view-name" style="font-size:20px; font-weight:700; color:var(--wa-text-main);">Nome do Canal</h2>
+                <p id="channel-view-followers" style="font-size:13px; color:var(--wa-green); font-weight:600;">5.230 seguidores</p>
+                <p id="channel-view-desc" style="font-size:14px; color:var(--wa-text-sub); margin-top:8px;">Descrição do canal...</p>
+            </div>
+            <div id="channel-posts-feed-container" style="margin-top:20px; display:flex; flex-direction:column; gap:16px;">
+                <!-- Feed posts injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Join Group by Link Modal -->
+    <div class="wa-modal-overlay" id="modal-join-link">
+        <div class="modal-window" style="max-width:400px;">
+            <div class="modal-title-row">
+                <h3>Entrar com Link de Convite</h3>
+                <button class="modal-close-btn" id="btn-close-join-link"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-content-pad">
+                <p style="font-size: 14px; color: var(--wa-sub-text); margin-bottom: 15px;">Cole o código do convite (ex: zap_xyz123) para entrar no grupo imediatamente.</p>
+                <input type="text" class="wa-input" id="input-join-token" placeholder="Token do convite" autocomplete="off">
+                <button class="wa-btn-primary" id="btn-submit-join-link" style="width:100%; margin-top:15px;">Entrar no Grupo</button>
+            </div>
+        </div>
+    </div>
+    <!-- Saved Contacts Modal -->
+    <div class="wa-modal-overlay" id="modal-saved-contacts">
+        <div class="modal-window" style="max-width:460px;">
+            <div class="modal-title-row">
+                <h3><i class="fa-solid fa-address-book" style="color:var(--wa-green);"></i> Meus Contatos Salvos</h3>
+                <button class="btn-modal-close" id="btn-close-saved-contacts"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-content-pad" style="padding:15px;">
+                <div id="saved-contacts-list-container" style="display:flex; flex-direction:column; gap:10px; max-height:380px; overflow-y:auto;">
+                    <!-- List of saved contacts rendered dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Toast Notifications -->
+    <div id="wa-toast-box" class="wa-toast-container"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyCTZpPm2vYxA2SN9SgMlByz9ba-FA_zvg8",
+          authDomain: "zapanon-80764.firebaseapp.com",
+          projectId: "zapanon-80764",
+          storageBucket: "zapanon-80764.firebasestorage.app",
+          messagingSenderId: "344042303162",
+          appId: "1:344042303162:web:640c85e1e765be25bbdc83",
+          measurementId: "G-EBL4P6VK10"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        try {
+            const analytics = getAnalytics(app);
+            window.firebaseAnalytics = analytics;
+        } catch (e) {
+            console.log('Firebase Analytics note:', e.message);
+        }
+        
+        window.firebaseApp = app;
+        window.firebaseConfig = firebaseConfig;
+        
+        console.log('🔥 Firebase (sem Storage) inicializado com sucesso!');
+    </script>
+
+    <!-- Application Script -->
+    <script src="app.js"></script>
+</body>
+</html>

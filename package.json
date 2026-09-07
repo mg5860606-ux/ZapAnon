@@ -1,0 +1,21 @@
+{
+  "name": "chat-anonimo",
+  "version": "1.0.0",
+  "description": "ZapAnon Master Web Server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "echo Built"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [],
+  "author": "CORVO",
+  "license": "ISC",
+  "dependencies": {
+    "@js-sdsl/ordered-map": "^4.4.2",
+    "firebase": "^12.18.0",
+    "firebase-admin": "^14.3.0"
+  }
+}
