@@ -4,14 +4,40 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 
-// --- FIREBASE ADMIN SETUP (Chave Privada / Servidor Protegido) ---
+// --- FIREBASE ADMIN SETUP (Chave Privada via ENV ou Arquivo) ---
 const { initializeApp, cert } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
-const serviceAccount = require('./serviceAccountKey.json');
 
-initializeApp({
-  credential: cert(serviceAccount)
-});
+let serviceAccount = null;
+
+if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+  try {
+    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+  } catch (e) {
+    console.error("Erro ao realizar parse de FIREBASE_SERVICE_ACCOUNT:", e.message);
+  }
+}
+
+if (!serviceAccount) {
+  try {
+    serviceAccount = require('./serviceAccountKey.json');
+  } catch (e) {
+    console.warn("⚠️ serviceAccountKey.json não encontrado localmente.");
+  }
+}
+
+if (serviceAccount) {
+  try {
+    initializeApp({
+      credential: cert(serviceAccount)
+    });
+    console.log("🔥 Firebase Admin SDK ativado com sucesso!");
+  } catch (e) {
+    console.error("Erro ao inicializar Firebase Admin:", e.message);
+  }
+} else {
+  console.warn("⚠️ Servidor rodando em modo desacoplado de Admin Firebase.");
+}
 
 const db = getFirestore();
 
