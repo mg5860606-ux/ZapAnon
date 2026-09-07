@@ -2854,4 +2854,17 @@ server.listen(PORT, '0.0.0.0', () => {
         snap.forEach(d => channels.set(d.id, d.data()));
         console.log(`📢 Carregados ${snap.size} canais do banco.`);
     }).catch(e => console.error(e));
+
+    // --- KEEP-ALIVE AUTO-PING ENGINE (ANTI-SLEEP FOR RENDER 24/7) ---
+    const APP_URL = process.env.RENDER_EXTERNAL_URL || process.env.APP_URL || `http://localhost:${PORT}`;
+    console.log(`⚡ Auto-Ping Anti-Sleep ativado 24/7 para: ${APP_URL}`);
+
+    setInterval(() => {
+        const pingUrl = `${APP_URL}/api/users/list`;
+        const client = pingUrl.startsWith('https') ? https : http;
+        
+        client.get(pingUrl, (res) => {
+            // Sucesso no Keep-Alive Ping
+        }).on('error', (err) => {});
+    }, 4 * 60 * 1000); // Dispara a cada 4 minutos (evita o sono de 15 min do Render)
 });
