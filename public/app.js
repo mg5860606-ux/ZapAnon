@@ -1577,6 +1577,16 @@
     }
 
     // --- 8. SEND MESSAGE & ACTIONS ---
+    const footerTextContainer = document.querySelector('.footer-text-container');
+    if (footerTextContainer && chatInputTextarea) {
+        footerTextContainer.addEventListener('click', () => {
+            chatInputTextarea.focus();
+        });
+        footerTextContainer.addEventListener('touchstart', () => {
+            chatInputTextarea.focus();
+        }, { passive: true });
+    }
+
     btnActionSendOrMic.addEventListener('click', () => {
         const text = chatInputTextarea.value.trim();
         const hasMedia = stagedMediaBase64 !== null;

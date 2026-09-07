@@ -2878,7 +2878,8 @@ body.dark-theme .reply-banner-content strong {
         left: 0 !important;
         transform: none !important;
         width: 100vw !important;
-        height: 100vh !important;
+        height: 100dvh !important;
+        height: 100vh;
         max-width: 100% !important;
         border-radius: 0 !important;
     }
@@ -2893,10 +2894,20 @@ body.dark-theme .reply-banner-content strong {
         top: 0;
         left: 0;
         width: 100%;
-        height: 100%;
+        height: 100dvh !important;
+        height: 100vh;
         z-index: 30;
         transform: translateX(100%);
         transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Prevent iOS & Android zoom and force virtual keyboard popup */
+    input, textarea, select {
+        font-size: 16px !important;
+    }
+
+    .footer-text-container textarea {
+        font-size: 16px !important;
     }
 
     .wa-app-root.mobile-active .wa-chat-viewport {
