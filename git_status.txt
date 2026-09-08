@@ -1,0 +1,10 @@
+ M README.md
+ D npm_ver.txt
+ D out.txt
+ M public/app.js
+ M public/style.css
+ M server.js
+ D test.js
+?? git_err.txt
+?? git_status.txt
+?? public/banner.svg

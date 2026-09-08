@@ -1,0 +1,5 @@
+warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'public/app.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'public/style.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'public/banner.svg', LF will be replaced by CRLF the next time Git touches it

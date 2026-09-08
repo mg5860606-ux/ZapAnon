@@ -1,0 +1,11 @@
+Line 3024: if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+Line 3030: voiceStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+Line 3032: mediaRecorder = new MediaRecorder(voiceStream);
+Line 3122: const audio = new Audio(audioSrc);
+Line 3149: audio.play();
+Line 3883: if (stream && typeof MediaRecorder !== 'undefined') {
+Line 3886: recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+Line 3888: try { recorder = new MediaRecorder(stream); } catch(ex){}
+Line 3904: await videoEl.play().catch(() => {});
+Line 4214: localMediaStream = await navigator.mediaDevices.getUserMedia({
+Line 4274: localMediaStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: currentCallData && currentCallData.callType === 'video' });

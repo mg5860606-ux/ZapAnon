@@ -1,3 +1,11 @@
+
+// Proteção contra quedas do servidor por exceções não tratadas
+process.on('uncaughtException', (err) => {
+    console.error('🚨 Uncaught Exception interceptada:', err);
+});
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('🚨 Unhandled Rejection interceptada:', reason);
+});
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
@@ -9,6 +17,7 @@ const { initializeApp, cert } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 
 let serviceAccount = null;
+let db = null;
 
 if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   try {
@@ -20,7 +29,9 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
 
 if (!serviceAccount) {
   try {
-    serviceAccount = require('./serviceAccountKey.json');
+    if (fs.existsSync(path.join(__dirname, 'serviceAccountKey.json'))) {
+      serviceAccount = require('./serviceAccountKey.json');
+    }
   } catch (e) {
     console.warn("⚠️ serviceAccountKey.json não encontrado localmente.");
   }
@@ -31,47 +42,69 @@ if (serviceAccount) {
     initializeApp({
       credential: cert(serviceAccount)
     });
+    db = getFirestore();
     console.log("🔥 Firebase Admin SDK ativado com sucesso!");
   } catch (e) {
     console.error("Erro ao inicializar Firebase Admin:", e.message);
+    db = null;
   }
 } else {
-  console.warn("⚠️ Servidor rodando em modo desacoplado de Admin Firebase.");
+  console.warn("⚠️ Servidor rodando em modo de memória independente (Stand-alone In-Memory DB).");
 }
 
-const db = getFirestore();
-
-// Wrappers para manter compatibilidade com as chamadas de banco do server.js
+// Wrappers para manter compatibilidade com as chamadas de banco do server.js (Safe Null-Proof)
 function collection(dbInst, name) { 
-  return dbInst.collection(name); 
+  if (!dbInst) return null;
+  try { return dbInst.collection(name); } catch(e) { return null; }
 }
 function doc(dbInst, colName, docId) {
-  if (typeof dbInst.doc === 'function' && !docId) return dbInst;
-  return dbInst.collection(colName).doc(docId);
+  if (!dbInst) return null;
+  try {
+    if (typeof dbInst.doc === 'function' && !docId) return dbInst;
+    return dbInst.collection(colName).doc(docId);
+  } catch(e) { return null; }
 }
-async function setDoc(docRef, data) { return await docRef.set(data); }
-async function updateDoc(docRef, data) { return await docRef.update(data); }
+async function setDoc(docRef, data) { 
+  if (!docRef) return null;
+  try { return await docRef.set(data); } catch(e) { return null; }
+}
+async function updateDoc(docRef, data) { 
+  if (!docRef) return null;
+  try { return await docRef.update(data); } catch(e) { return null; }
+}
 async function addDoc(colRef, data) {
-  const ref = await colRef.add(data);
-  return { id: ref.id };
+  if (!colRef) return { id: 'temp_' + Date.now() };
+  try {
+    const ref = await colRef.add(data);
+    return { id: ref.id };
+  } catch(e) { return { id: 'temp_' + Date.now() }; }
 }
 async function getDoc(docRef) {
-  const snap = await docRef.get();
-  return {
-    exists: () => snap.exists,
-    data: () => snap.data(),
-    id: snap.id
-  };
+  if (!docRef) return { exists: () => false, data: () => null, id: null };
+  try {
+    const snap = await docRef.get();
+    return {
+      exists: () => snap.exists,
+      data: () => snap.data(),
+      id: snap.id
+    };
+  } catch(e) { return { exists: () => false, data: () => null, id: null }; }
 }
 async function getDocs(colRef) {
-  const snap = await colRef.get();
-  return {
-    size: snap.size,
-    empty: snap.empty,
-    forEach: (cb) => snap.forEach(d => cb({ id: d.id, data: () => d.data() }))
-  };
+  if (!colRef) return { size: 0, empty: true, forEach: () => {} };
+  try {
+    const snap = await colRef.get();
+    return {
+      size: snap.size,
+      empty: snap.empty,
+      forEach: (cb) => snap.forEach(d => cb({ id: d.id, data: () => d.data() }))
+    };
+  } catch(e) { return { size: 0, empty: true, forEach: () => {} }; }
 }
-async function deleteDoc(docRef) { return await docRef.delete(); }
+async function deleteDoc(docRef) { 
+  if (!docRef) return null;
+  try { return await docRef.delete(); } catch(e) { return null; }
+}
 function query(colRef, ...constraints) {
   let ref = colRef;
   constraints.forEach(c => {

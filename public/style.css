@@ -3002,12 +3002,12 @@ body.dark-theme .reply-banner-content strong {
     background: rgba(0, 168, 132, 0.08);
 }
 
-/* Dynamic Wallpaper Applications on Chat Container */
-.wa-messages-container.wp-dark { background: #0b141a !important; background-image: radial-gradient(#202c33 1.2px, transparent 1.2px) !important; }
-.wa-messages-container.wp-cyber { background: #0d1b2a !important; background-image: linear-gradient(135deg, #0d1b2a, #1b263b) !important; }
-.wa-messages-container.wp-blue { background: #0f172a !important; background-image: linear-gradient(135deg, #0f172a, #1e3a8a) !important; }
-.wa-messages-container.wp-emerald { background: #022c22 !important; background-image: linear-gradient(135deg, #022c22, #065f46) !important; }
-.wa-messages-container.wp-purple { background: #2e1065 !important; background-image: linear-gradient(135deg, #2e1065, #5b21b6) !important; }
+/* Dynamic Wallpaper Applications on Chat Container & Wall */
+.chat-messages-wall.wp-dark, .wa-messages-container.wp-dark { background: #0b141a !important; background-image: radial-gradient(#202c33 1.2px, transparent 1.2px) !important; background-size: 14px 14px !important; }
+.chat-messages-wall.wp-cyber, .wa-messages-container.wp-cyber { background: #0d1b2a !important; background-image: linear-gradient(135deg, #0d1b2a, #1b263b) !important; }
+.chat-messages-wall.wp-blue, .wa-messages-container.wp-blue { background: #0f172a !important; background-image: linear-gradient(135deg, #0f172a, #1e3a8a) !important; }
+.chat-messages-wall.wp-emerald, .wa-messages-container.wp-emerald { background: #022c22 !important; background-image: linear-gradient(135deg, #022c22, #065f46) !important; }
+.chat-messages-wall.wp-purple, .wa-messages-container.wp-purple { background: #2e1065 !important; background-image: linear-gradient(135deg, #2e1065, #5b21b6) !important; }
 
 /* ==========================================================================
    FULL SCREEN USER PROFILE OVERLAY (PC & MOBILE)

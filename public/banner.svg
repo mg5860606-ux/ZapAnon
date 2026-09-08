@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b141a" />
+      <stop offset="50%" stop-color="#111b21" />
+      <stop offset="100%" stop-color="#0a1014" />
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00a884" />
+      <stop offset="100%" stop-color="#25d366" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#25d366" />
+      <stop offset="100%" stop-color="#53bdeb" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.04" />
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="420" fill="url(#bgGrad)" rx="16" />
+  <rect width="1200" height="420" fill="url(#grid)" rx="16" />
+
+  <!-- Ambient Glow Circles -->
+  <circle cx="200" cy="210" r="140" fill="#00a884" opacity="0.12" filter="url(#glow)" />
+  <circle cx="1000" cy="210" r="160" fill="#53bdeb" opacity="0.08" filter="url(#glow)" />
+
+  <!-- Top Accent Bar -->
+  <rect x="0" y="0" width="1200" height="5" fill="url(#accentGrad)" rx="2" />
+
+  <!-- Shield / Logo Icon -->
+  <g transform="translate(100, 110)">
+    <circle cx="100" cy="100" r="90" fill="#202c33" stroke="#00a884" stroke-width="3" filter="url(#glow)" />
+    <!-- Lock / Shield Symbol -->
+    <path d="M100 45 L145 65 V115 C145 145 100 165 100 165 C100 165 55 145 55 115 V65 Z" fill="url(#primaryGrad)" />
+    <!-- Keyhole -->
+    <circle cx="100" cy="95" r="12" fill="#111b21" />
+    <path d="M96 95 L93 125 H107 L104 95 Z" fill="#111b21" />
+    <!-- Crow / Stealth Eye Accent -->
+    <circle cx="100" cy="95" r="4" fill="#00a884" />
+  </g>
+
+  <!-- Text Header -->
+  <g transform="translate(340, 120)">
+    <!-- Badges -->
+    <rect x="0" y="0" width="115" height="26" rx="13" fill="#00a884" fill-opacity="0.2" stroke="#00a884" stroke-width="1" />
+    <text x="57" y="17" fill="#25d366" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" text-anchor="middle">v4.0 MASTER</text>
+
+    <rect x="125" y="0" width="110" height="26" rx="13" fill="#53bdeb" fill-opacity="0.15" stroke="#53bdeb" stroke-width="1" />
+    <text x="180" y="17" fill="#53bdeb" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" text-anchor="middle">E2EE AES-256</text>
+
+    <rect x="245" y="0" width="130" height="26" rx="13" fill="#a855f7" fill-opacity="0.15" stroke="#a855f7" stroke-width="1" />
+    <text x="310" y="17" fill="#c084fc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" text-anchor="middle">100% ANÔNIMO</text>
+
+    <!-- Main Title -->
+    <text x="0" y="80" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="52" font-weight="900" letter-spacing="-1">
+      Zap<tspan fill="#25d366">Anon</tspan>
+    </text>
+
+    <!-- Subtitle -->
+    <text x="0" y="120" fill="#8696a0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="19" font-weight="400">
+      WhatsApp Web &amp; Mobile Fullscreen Clone com Privacidade Absoluta &amp; Bot API
+    </text>
+
+    <!-- Creator Tag -->
+    <g transform="translate(0, 155)">
+      <rect x="0" y="0" width="230" height="34" rx="8" fill="#182229" stroke="#2a3942" stroke-width="1" />
+      <text x="115" y="22" fill="#e9edef" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="600" text-anchor="middle">
+        👑 Desenvolvido por <tspan fill="#25d366">CORVO</tspan>
+      </text>
+    </g>
+  </g>
+
+  <!-- Feature Pills Bottom Right -->
+  <g transform="translate(860, 290)">
+    <rect x="0" y="0" width="240" height="65" rx="12" fill="#182229" stroke="#222e35" stroke-width="1.5" />
+    <text x="20" y="27" fill="#00a884" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700">⚡ BOT API TELEGRAM</text>
+    <text x="20" y="47" fill="#8696a0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12">Compatível com cURL &amp; Python</text>
+  </g>
+</svg>

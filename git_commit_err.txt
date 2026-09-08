@@ -1,0 +1,13 @@
+error: pathspec 'v4.0' did not match any file(s) known to git
+error: pathspec 'Master' did not match any file(s) known to git
+error: pathspec 'Release' did not match any file(s) known to git
+error: pathspec '-' did not match any file(s) known to git
+error: pathspec 'banner' did not match any file(s) known to git
+error: pathspec 'oficial,' did not match any file(s) known to git
+error: pathspec 'auditoria' did not match any file(s) known to git
+error: pathspec 'completa' did not match any file(s) known to git
+error: pathspec 'de' did not match any file(s) known to git
+error: pathspec 'logica' did not match any file(s) known to git
+error: pathspec 'e' did not match any file(s) known to git
+error: pathspec 'estabilizacao' did not match any file(s) known to git
+error: pathspec 'anti-crash' did not match any file(s) known to git

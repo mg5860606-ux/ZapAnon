@@ -349,7 +349,16 @@
                 body: JSON.stringify(syncPayload)
             });
             const data = await res.json();
-            currentUser = data.user;
+            if (data.user) {
+                currentUser = data.user;
+                try {
+                    localStorage.setItem('wa_user_id', currentUser.id);
+                    localStorage.setItem('wa_user_name', currentUser.name);
+                    if (currentUser.handle) localStorage.setItem('wa_user_handle', currentUser.handle);
+                    if (currentUser.avatar) localStorage.setItem('wa_user_avatar', currentUser.avatar);
+                    if (currentUser.cover) localStorage.setItem('wa_user_cover', currentUser.cover);
+                } catch (e) {}
+            }
             conversations = data.conversations || [];
             stickerPacks = data.stickerPacks || [];
             statuses = data.statuses || [];
@@ -2744,6 +2753,7 @@
     // --- 15. PROFILE & COVER CUSTOMIZATION ---
     inputUploadAvatar.addEventListener('change', (e) => {
         const file = e.target.files[0];
+        e.target.value = '';
         if (!file) return;
         openPhotoCropper(file, true, async (croppedBase64) => {
             if (profileAvatarImg) profileAvatarImg.src = croppedBase64;
@@ -2756,6 +2766,7 @@
 
     inputUploadCover.addEventListener('change', (e) => {
         const file = e.target.files[0];
+        e.target.value = '';
         if (!file) return;
         openPhotoCropper(file, false, async (croppedBase64) => {
             if (profileCoverImg) profileCoverImg.src = croppedBase64;
@@ -3667,11 +3678,13 @@
                     activeConversation.wallpaper = wpToSave;
                     applyWallpaperToChat(wpToSave);
                     modalWallpaper.classList.remove('active');
+                    showToast('Papel de parede aplicado com sucesso! 🖼️', 'fa-solid fa-image');
                 }
             } catch (err) {
                 activeConversation.wallpaper = wpToSave;
                 applyWallpaperToChat(wpToSave);
                 modalWallpaper.classList.remove('active');
+                showToast('Papel de parede aplicado com sucesso! 🖼️', 'fa-solid fa-image');
             }
         });
     }
